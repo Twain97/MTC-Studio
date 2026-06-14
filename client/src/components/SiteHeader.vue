@@ -19,7 +19,7 @@ const links = [
 
       <nav class="hidden items-center gap-8 md:flex" aria-label="Main navigation">
         <RouterLink v-for="link in links" :key="link.to" :to="link.to" class="nav-link">{{ link.label }}</RouterLink>
-        <RouterLink to="/contact" class="btn-gold !px-5 !py-2.5">Book a session</RouterLink>
+        <RouterLink to="/contact" class="btn-gold rounded-md !px-5 !py-2.5">Book a session</RouterLink>
       </nav>
 
       <button class="rounded-full border border-white/20 p-2 text-white md:hidden" aria-label="Toggle menu" @click="open = !open">

@@ -5,10 +5,10 @@ import LogoMark from './LogoMark.vue'
 
 <template>
   <footer class="bg-dawn-950 text-white">
-    <div class="site-container grid gap-10 py-14 md:grid-cols-[1.2fr_.8fr_.8fr]">
+    <div class="site-container grid gap-6 py-7 md:grid-cols-[1.2fr_.8fr_.8fr]">
       <div>
         <LogoMark />
-        <p class="mt-5 max-w-sm text-sm leading-7 text-dawn-200">Editorial photography with warmth, intention, and a lasting sense of place.</p>
+        <p class="mt-0 max-w-sm text-sm leading-7 text-dawn-200">Every Laughter, Smile and Memory captures and immortalized with love.</p>
       </div>
       <div>
         <h2 class="eyebrow text-gold-300">Explore</h2>
@@ -27,7 +27,7 @@ import LogoMark from './LogoMark.vue'
         </div>
       </div>
     </div>
-    <div class="border-t border-white/10 py-5 text-center text-xs tracking-wider text-dawn-300">© {{ new Date().getFullYear() }} MTC Studio. All rights reserved.</div>
+    <div class="border-t border-white/10 py-5 text-center text-xs tracking-wider text-dawn-300">© {{ new Date().getFullYear() }} MTC-Studio. All rights reserved.</div>
   </footer>
 </template>
 

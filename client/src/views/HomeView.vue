@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
-import { ArrowRight, Camera, Heart, Sparkles, Users } from 'lucide-vue-next'
+import { ArrowRight, Camera, Heart, Sparkles, Users, PlaneIcon } from 'lucide-vue-next'
 import { useProjects } from '../composables/useProjects.js'
 import PortfolioCard from '../components/PortfolioCard.vue'
 import ContactForm from '../components/ContactForm.vue'
@@ -11,13 +11,16 @@ onMounted(loadProjects)
 const services = [
   { icon: Heart, title: 'Weddings', text: 'Honest, elegant coverage from quiet preparations to the final dance.' },
   { icon: Users, title: 'Portraits', text: 'Relaxed personal and family sessions with thoughtful direction.' },
-  { icon: Sparkles, title: 'Editorial', text: 'Distinctive visual stories for fashion, products, and growing brands.' }
+  { icon: PlaneIcon, title: 'Drone Coverage', text: 'Aerial shots of events and locations from a unique perspective.' }
 ]
 
 const pricing = [
-  { name: 'Portrait', price: '₦150k', detail: 'For individuals, couples, and families.', features: ['90-minute session', '20 edited photographs', 'Private online gallery'] },
-  { name: 'Celebration', price: '₦450k', detail: 'For intimate weddings and milestone events.', features: ['Up to 6 hours', '150+ edited photographs', 'Highlight gallery in 72 hours'], featured: true },
-  { name: 'Campaign', price: 'Custom', detail: 'For brands, editorial teams, and commercial work.', features: ['Creative consultation', 'Production planning', 'Commercial usage options'] }
+  { name: 'Celebratory Portraits', price: '₦40,000', detail: 'For Graduations, Birthdays, Baby Bumps, and Anniversaries.', features: ['6 edited photographs', '24-72 hours delivery', 'Private online gallery'], featured: true },
+  { name: 'Corporate Photographs', price: '₦40,000', detail: 'For corporate portraits and branding.', features: ['6 edited photographs', '24-72 hours delivery', 'Private online gallery'], featured: true },
+  { name: 'Couple Portrait', price: '₦60,000', detail: 'For couples pre-wedding shoot.', features: ['6 edited photographs Per Outfit', '24-72 hours delivery', 'Private online gallery'], featured: true  },
+  { name: 'Family Portraits', price: '₦80,000', detail: 'For Birthdays, Naming Ceremonies and Burials.', features: ['10 edited photographs', '24-72 hours delivery', 'Private online gallery'], featured: true },
+  { name: 'Event Coverage', price: '₦300,000', detail: 'For a days event, additional days will attract extra fee of #170,000.', features: [ 'Birthdays', 'Engagements', 'Weddings', 'Retirement Ceremony', 'Burials', 'Corporate Events', '7-14 Days Delivery' ], featured: true },
+  { name: 'Campaign', price: 'Custom', detail: 'For brands, editorial teams, and commercial work.', features: ['Creative consultation', 'Production planning', 'Commercial usage options'], featured: true  }
 ]
 </script>
 
@@ -27,19 +30,19 @@ const pricing = [
       <div class="relative min-h-[620px] overflow-hidden ">
         <img src="/images/vc_wedding.png" alt="Bride photographed by MTC Studio" class="absolute inset-0 h-full w-full object-cover object-center" />
         <div class="absolute inset-0 bg-gradient-to-r from-dawn-950/30 via-transparent to-dawn-950/10" />
-        <div class="absolute bottom-8 right-8 max-w-xs border border-white/30 bg-dawn-950/75 p-5 text-white backdrop-blur md:bottom-12 md:right-12">
-          <p class="font-display text-2xl">MTC Studio</p>
-          <p class="mt-2 text-xs uppercase tracking-[.2em] text-gold-200">Photography with intention</p>
+        <div class=" drop-shadow-2xl md:absolute mt-80 mx-auto max-w-xs border border-white/30 bg-dawn-950/75 p-5 text-white backdrop-blur md:bottom-12 md:right-12">
+          <p class="font-display text-2xl">MTC-STUDIO</p>
+          <p class="mt-2 text-xs uppercase tracking-[.2em] text-gold-200 ">Photography with intention</p>
         </div>
       </div>
       <div class="hero-panel flex items-center">
-        <div class="relative z-10 px-6 py-20 sm:px-12 lg:ml-auto lg:max-w-2xl lg:px-16">
+        <div class="relative z-10 px-6 py-10 sm:px-12 lg:ml-auto lg:max-w-2xl lg:px-16">
           <p class="eyebrow text-dawn-950">Lagos · Available Nationwide</p>
           <h1 class="mt-6 font-display text-6xl font-semibold leading-[.88] text-dawn-950 sm:text-7xl xl:text-8xl">Stories in<br /><em class="font-normal">every frame.</em></h1>
           <p class="mt-7 max-w-lg text-base leading-8 text-dawn-900">Refined photography for weddings, portraits, and brands. We capture each movement, meaning behind each moment and turn them into memories that'll last a lifetime.</p>
           <div class="mt-9 flex flex-wrap gap-4">
-            <RouterLink to="/portfolio" class="btn-dark">View portfolio <ArrowRight :size="18" /></RouterLink>
-            <RouterLink to="/contact" class="btn-outline-dark">Book a session</RouterLink>
+            <RouterLink to="/portfolio" class="btn-dark rounded-md">View portfolio <ArrowRight :size="18" /></RouterLink>
+            <RouterLink to="/contact" class="btn-outline-dark rounded-md">Book a session</RouterLink>
           </div>
         </div>
       </div>
@@ -50,18 +53,22 @@ const pricing = [
   <section class="about section-pad overflow-hidden bg-dawn-900">
     <div class="site-container grid items-center gap-12 lg:grid-cols-2">
       <div v-reveal class="relative">
-        <img src="/images/photographer.webp" alt="Photographer holding a camera" class="h-[540px] w-full object-cover" />
-        <div class="absolute -bottom-7 -right-3 hidden w-52 bg-gold-300 p-6 text-dawn-950 sm:block">
+        <img src="/images/photographer.webp" alt="Photographer holding a camera" class="h-[540px] rounded-md w-full object-cover" />
+        <div class="absolute rounded-md -bottom-7 -right-3 hidden w-52 bg-gold-300 p-6 text-dawn-950 sm:block">
           <p class="font-display text-4xl font-semibold">5+</p>
-          <p class="mt-1 text-xs font-bold uppercase tracking-[.16em]">Years creating stories</p>
+          <p class="mt-1 text-xs font-bold uppercase tracking-[.16em]">Years creating memories</p>
         </div>
       </div>
       <div v-reveal="120" class="lg:pl-10">
         <p class="eyebrow text-gold-700">MTC-Studio</p>
         <h2 class="section-title mt-4">Images that feel like the moment.</h2>
-        <p class="mt-6 text-base leading-8 text-dawn-700">Our approach balances observant documentary photography with a polished editorial eye. The result is work that feels effortless now and meaningful decades from now.</p>
-        <p class="mt-4 text-base leading-8 text-dawn-700">We pay attention to light, people, and the small exchanges that make every story personal.</p>
-        <RouterLink to="/about" class="mt-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.18em] text-dawn-900">Meet MTC Studio <ArrowRight :size="17" /></RouterLink>
+        <p class="mt-6 text-base leading-8 text-dawn-200">
+          <span class="section-title text-gold-700 font-bold">H</span>ello! I'm <span class="section-title text-gold-700 font-bold">T</span>aiwo, the admittedly handsome face (and chief memory preserver) behind MTC Studio.  
+          With over five years of experience behind the lens, we have captured, recorded, and beautifully framed countless unforgettable moments, from weddings that made hearts skip a beat, to birthdays full of pure joy, convocations bursting with pride, and every other milestone worth celebrating.  
+          <br/>The result? Timeless photographs and videos that let our clients hit “replay” on their happiest days whenever they wish, creating memories so well preserved, they’ll still be cherished long after the cake is gone and the confetti has settled. 
+          <br/> Welcome to MTC Studio where we don’t just take pictures… we freeze happiness in time.
+        </p>
+        <RouterLink to="/about" class="mt-8 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.18em] text-dawn-900">Meet MTC-STUDIO <ArrowRight :size="17" /></RouterLink>
       </div>
     </div>
   </section>
@@ -86,7 +93,7 @@ const pricing = [
     <div class="site-container">
       <div v-reveal class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
         <div>
-          <p class="eyebrow text-gold-700">Selected work</p>
+          <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Selected work</p>
           <h2 class="section-title mt-4">Recent stories</h2>
         </div>
         <RouterLink to="/portfolio" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.18em] text-dawn-900">Explore all work <ArrowRight :size="17" /></RouterLink>
@@ -100,7 +107,7 @@ const pricing = [
   <section class="pricing section-pad bg-white">
     <div class="site-container">
       <div v-reveal class="mx-auto max-w-2xl text-center">
-        <p class="eyebrow text-gold-700">Starting investment</p>
+        <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Starting investment</p>
         <h2 class="section-title mt-4">Choose the right experience.</h2>
         <p class="mt-5 text-dawn-600">Each collection can be tailored to your date, location, and creative needs.</p>
       </div>

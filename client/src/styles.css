@@ -15,8 +15,8 @@
 @layer components {
   .site-container { @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-10; }
   .section-pad { @apply py-20 md:py-28; }
-  .eyebrow { @apply text-[22px] font-bold uppercase tracking-[.24em]; }
-  .section-title { @apply font-display text-4xl font-semibold leading-[1.05] text-dawn-950 sm:text-5xl lg:text-6xl; }
+  .eyebrow { @apply text-[16px] font-bold uppercase tracking-[.24em]; }
+  .section-title { @apply font-display text-4xl font-semibold leading-[1.05] text-dawn-500 sm:text-5xl lg:text-6xl; }
   .site-header { @apply sticky top-0 z-40 border-b border-white/10 bg-dawn-950/95 shadow-lg backdrop-blur; }
   .nav-link { @apply relative py-2 text-xs font-bold uppercase tracking-[.16em] text-dawn-100 transition hover:text-gold-300; }
   .nav-link.router-link-active::after { content: ''; @apply absolute inset-x-0 -bottom-1 h-px bg-gold-300; }
