@@ -30,7 +30,7 @@ const pricing = [
       <div class="relative min-h-[620px] overflow-hidden ">
         <img src="/images/vc_wedding.png" alt="Bride photographed by MTC Studio" class="absolute inset-0 h-full w-full object-cover object-center" />
         <div class="absolute inset-0 bg-gradient-to-r from-dawn-950/30 via-transparent to-dawn-950/10" />
-        <div class=" drop-shadow-2xl md:absolute mt-80 mx-auto max-w-xs border border-white/30 bg-dawn-950/75 p-5 text-white backdrop-blur md:bottom-12 md:right-12">
+        <div class="rounded-lg drop-shadow-2xl md:absolute mt-80 mx-auto max-w-xs border border-white/30 bg-dawn-950/75 p-5 text-white backdrop-blur md:bottom-12 md:right-12">
           <p class="font-display text-2xl">MTC-STUDIO</p>
           <p class="mt-2 text-xs uppercase tracking-[.2em] text-gold-200 ">Photography with intention</p>
         </div>
@@ -112,8 +112,8 @@ const pricing = [
         <p class="mt-5 text-dawn-600">Each collection can be tailored to your date, location, and creative needs.</p>
       </div>
       <div class="mt-12 grid items-stretch gap-6 lg:grid-cols-3">
-        <article v-for="(plan, index) in pricing" :key="plan.name" v-reveal="index * 100" class="relative border p-8" :class="plan.featured ? 'border-gold-400 bg-dawn-950 text-white shadow-glow lg:-translate-y-4' : 'border-dawn-200 bg-dawn-50'">
-          <span v-if="plan.featured" class="absolute right-5 top-5 bg-gold-300 px-3 py-1 text-[10px] font-bold uppercase tracking-[.16em] text-dawn-950">Most popular</span>
+        <article v-for="(plan, index) in pricing" :key="plan.name" v-reveal="index * 100" class="relative border p-8" :class="plan.featured ? 'rounded-lg border-gold-400 bg-dawn-950 text-white shadow-glow lg:-translate-y-4' : 'border-dawn-200 bg-dawn-50'">
+          <span v-if="plan.featured" class="rounded-lg absolute right-5 top-5 bg-gold-300 px-3 py-1 text-[10px] font-bold uppercase tracking-[.16em] text-dawn-950">Most popular</span>
           <h3 class="font-display text-3xl">{{ plan.name }}</h3>
           <p class="mt-4 text-4xl font-semibold text-gold-400">{{ plan.price }}</p>
           <p class="mt-4 text-sm leading-7" :class="plan.featured ? 'text-dawn-200' : 'text-dawn-600'">{{ plan.detail }}</p>
@@ -127,13 +127,13 @@ const pricing = [
   </section>
 
   <section class="contact section-pad bg-dawn-800 text-white">
-    <div class="site-container grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
+    <div class="rounded-lg site-container grid gap-12 lg:grid-cols-[.8fr_1.2fr]">
       <div v-reveal>
         <p class="eyebrow text-gold-300">Start a conversation</p>
         <h2 class="section-title mt-4 text-white">Tell us what you are planning.</h2>
         <p class="mt-6 max-w-md text-base leading-8 text-dawn-100">Share your date, location, and the feeling you want your photographs to hold. We normally reply within one business day.</p>
       </div>
-      <div v-reveal="120" class="bg-white p-6 text-dawn-950 shadow-glow sm:p-9"><ContactForm /></div>
+      <div v-reveal="120" class=" rounded-lg bg-white p-6 text-dawn-950 shadow-glow sm:p-9"><ContactForm /></div>
     </div>
   </section>
 </template>

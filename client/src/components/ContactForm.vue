@@ -25,16 +25,16 @@ async function submit() {
 <template>
   <form class="grid gap-5" @submit.prevent="submit">
     <div class="grid gap-5 sm:grid-cols-2">
-      <label class="form-label">Your name<input v-model.trim="form.name" class="form-input" required /></label>
-      <label class="form-label">Email address<input v-model.trim="form.email" type="email" class="form-input" required /></label>
+      <label class="form-label">Your name<input v-model.trim="form.name" class="rounded-lg form-input" required /></label>
+      <label class="form-label">Email address<input v-model.trim="form.email" type="email" class="rounded-lg form-input" required /></label>
     </div>
     <div class="grid gap-5 sm:grid-cols-2">
-      <label class="form-label">Phone number<input v-model.trim="form.phone" type="tel" class="form-input" /></label>
-      <label class="form-label">Subject<input v-model.trim="form.subject" class="form-input" required /></label>
+      <label class="form-label">Phone number<input v-model.trim="form.phone" type="tel" class="rounded-lg form-input" /></label>
+      <label class="form-label">Subject<input v-model.trim="form.subject" class="rounded-lg form-input" required /></label>
     </div>
-    <label class="form-label">Tell us about your event<textarea v-model.trim="form.message" rows="6" class="form-input resize-none" required /></label>
+    <label class="form-label">Tell us about your event<textarea v-model.trim="form.message" rows="6" class="rounded-lg form-input resize-none" required /></label>
     <p v-if="notice.text" :class="notice.type === 'success' ? 'text-emerald-700' : 'text-red-700'" class="text-sm">{{ notice.text }}</p>
-    <button class="btn-gold w-fit" :disabled="loading">
+    <button class="btn-gold rounded-lg w-fit" :disabled="loading">
       <LoaderCircle v-if="loading" :size="18" class="animate-spin" />
       <Send v-else :size="18" />
       {{ loading ? 'Sending...' : 'Send inquiry' }}

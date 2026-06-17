@@ -29,8 +29,34 @@ router.get('/:id', async (req, res, next) => {
   }
 })
 
-router.post('/', requireAdmin, projectUploads, async (req, res, next) => {
-  try {
+router.post(
+  '/',
+  (req, res, next) => {
+    console.log('1. request received')
+
+    req.on('aborted', () => {
+      console.log('REQUEST ABORTED')
+    })
+
+    req.on('close', () => {
+      console.log('REQUEST CLOSED')
+    })
+
+    next()
+  },
+  requireAdmin,
+  (req, res, next) => {
+    console.log('2. auth passed')
+    next()
+  },
+  projectUploads,
+  (req, res, next) => {
+    console.log('3. multer passed')
+    next()
+  },
+  async (req, res, next) => {
+    console.log('4. handler entered')
+    try {
     const thumbnail = req.files?.thumbnail?.[0]
     const images = req.files?.images || []
     if (!thumbnail) return res.status(400).json({ message: 'A thumbnail image is required.' })
@@ -52,7 +78,8 @@ router.post('/', requireAdmin, projectUploads, async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-})
+  }
+)
 
 router.patch('/:id', requireAdmin, async (req, res, next) => {
   try {

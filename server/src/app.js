@@ -35,6 +35,18 @@ if (env.nodeEnv === 'production') {
   app.get('*all', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
 }
 
+app.use((req, res, next) => {
+  req.on('aborted', () => {
+    console.log('REQUEST ABORTED BY CLIENT')
+  })
+
+  req.on('close', () => {
+    console.log('REQUEST CLOSED')
+  })
+
+  next()
+})
+
 app.use(notFound)
 app.use(errorHandler)
 

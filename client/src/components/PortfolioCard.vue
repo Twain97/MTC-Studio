@@ -11,7 +11,7 @@ function formatDate(value) {
 </script>
 
 <template>
-  <article class="portfolio-card group" :class="{ 'is-active': active }" tabindex="0" @click="active = !active" @keydown.enter="active = !active">
+  <article class="portfolio-card group rounded-md" :class="{ 'is-active': active }" tabindex="0" @click="active = !active" @keydown.enter="active = !active">
     <div class="relative overflow-hidden">
       <img :src="project.thumbnail" :alt="project.eventName" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" />
       <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent" />

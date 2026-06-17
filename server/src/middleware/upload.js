@@ -21,7 +21,7 @@ function storageFor(folder) {
 
 export const imageUpload = multer({
   storage: storageFor('images'),
-  limits: { fileSize: 10 * 1024 * 1024, files: 6 },
+  limits: { fileSize: 20 * 1024 * 1024, files: 6 },
   fileFilter: (_req, file, callback) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     callback(allowed.includes(file.mimetype) ? null : new Error('Only JPG, PNG, and WebP images are allowed.'), allowed.includes(file.mimetype))
@@ -30,7 +30,7 @@ export const imageUpload = multer({
 
 export const contractUpload = multer({
   storage: storageFor('contracts'),
-  limits: { fileSize: 8 * 1024 * 1024, files: 1 },
+  limits: { fileSize: 20 * 1024 * 1024, files: 1 },
   fileFilter: (_req, file, callback) => {
     const allowed = file.mimetype === 'application/pdf'
     callback(allowed ? null : new Error('Contracts must be PDF files.'), allowed)
