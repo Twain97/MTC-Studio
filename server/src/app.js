@@ -25,16 +25,6 @@ app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
 app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', immutable: true }))
 
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
-app.use('/api/auth', authRoutes)
-app.use('/api/projects', projectRoutes)
-app.use('/api/messages', messageRoutes)
-app.use('/api/dashboard', dashboardRoutes)
-
-if (env.nodeEnv === 'production') {
-  app.use(express.static(clientDist))
-  app.get('*all', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
-}
-
 app.use((req, res, next) => {
   req.on('aborted', () => {
     console.log('REQUEST ABORTED BY CLIENT')
@@ -46,6 +36,16 @@ app.use((req, res, next) => {
 
   next()
 })
+app.use('/api/auth', authRoutes)
+app.use('/api/projects', projectRoutes)
+app.use('/api/messages', messageRoutes)
+app.use('/api/dashboard', dashboardRoutes)
+
+if (env.nodeEnv === 'production') {
+  app.use(express.static(clientDist))
+  app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')))
+}
+
 
 app.use(notFound)
 app.use(errorHandler)
