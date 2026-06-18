@@ -12,10 +12,6 @@ export default defineConfig({
       '/uploads': 'http://localhost:5000'
     }
   },
-  // resolve: {
-  //   alias: {
-  //     '@': fileURLToPath(new URL('./src', import.meta.url))
-  //   }
-  // }
+  base:'/',
 })
 
