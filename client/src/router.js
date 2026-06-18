@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import { isAuthenticated } from './services/auth.js'
 import HomeView from './views/HomeView.vue'
 import PortfolioView from './views/PortfolioView.vue'
@@ -12,7 +12,7 @@ import MessagesView from './views/admin/MessagesView.vue'
 import UploadView from './views/admin/UploadView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   scrollBehavior: () => ({ top: 0, behavior: 'smooth' }),
   routes: [
     { path: '/', name: 'home', component: HomeView },
