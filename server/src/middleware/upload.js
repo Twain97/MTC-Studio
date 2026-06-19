@@ -21,7 +21,7 @@ function storageFor(folder) {
 
 export const imageUpload = multer({
   storage: storageFor('images'),
-  limits: { fileSize: 20 * 1024 * 1024, files: 6 },
+  limits: { fileSize: 20 * 1024 * 1024, files: 5 },
   fileFilter: (_req, file, callback) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     callback(allowed.includes(file.mimetype) ? null : new Error('Only JPG, PNG, and WebP images are allowed.'), allowed.includes(file.mimetype))
