@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: '/api', timeout: 20000 })
+const api = axios.create({ baseURL: '/api'}) //removed , timeout: 120000 
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('mtc_admin_token')
@@ -18,6 +18,7 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
 
 export default api
 
