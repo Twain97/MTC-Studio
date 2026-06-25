@@ -34,7 +34,11 @@ router.post('/', contactLimiter, async (req, res, next) => {
 
 router.get('/', requireAdmin, async (req, res, next) => {
   try {
-    const filter = req.query.unread === 'true' ? { isRead: false } : {}
+    const filter = {}
+    if (req.query.unread === 'true') filter.isRead = false
+    if (req.query.status && ['sent', 'failed', 'not_configured'].includes(req.query.status)) {
+      filter.emailStatus = req.query.status
+    }
     const messages = await Message.find(filter).sort({ createdAt: -1 })
     res.json({ messages })
   } catch (error) {
@@ -77,10 +81,15 @@ router.post('/:id/reply', requireAdmin, contractUpload.single('contract'), async
     if (!message) return res.status(404).json({ message: 'Message not found.' })
     if (!req.body.body?.trim()) return res.status(400).json({ message: 'A reply message is required.' })
 
-    await replyToClient(message, req.body.body.trim(), req.file)
+    await replyToClient(message, req.body.body.trim(), req.file, {
+      name: req.admin?.name,
+      email: req.admin?.email
+    })
     message.replies.push({
       body: req.body.body.trim(),
-      contractPath: req.file ? publicUploadPath(req.file, 'contracts') : undefined
+      contractPath: req.file ? publicUploadPath(req.file, 'contracts') : undefined,
+      adminName: req.admin?.name,
+      adminEmail: req.admin?.email
     })
     message.isRead = true
     message.readAt ||= new Date()
@@ -93,4 +102,3 @@ router.post('/:id/reply', requireAdmin, contractUpload.single('contract'), async
 })
 
 export default router
-

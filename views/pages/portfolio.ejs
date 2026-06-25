@@ -10,11 +10,11 @@
   </section>
   <section class="portfolio section-pad bg-dawn-50">
     <div class="site-container">
-      <div class="grid gap-7 md:grid-cols-2">
+      <div class="grid grid-cols-2 auto-rows-[11rem] gap-4 sm:grid-cols-3 sm:auto-rows-[12rem] lg:grid-cols-6 lg:auto-rows-[12rem] lg:gap-5">
         <% projects.forEach((project, index) => { %>
-          <article data-reveal="<%= index * 70 %>" class="portfolio-card group rounded-md">
-            <div class="relative overflow-hidden">
-              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" />
+          <article data-reveal="<%= index * 70 %>" class="portfolio-card group overflow-hidden rounded-md <%= index === 0 ? 'col-span-2 row-span-2 sm:col-span-2 lg:col-span-3 lg:row-span-2' : index === 1 ? 'col-span-1 row-span-1 sm:col-span-1 lg:col-span-2' : 'col-span-1 row-span-1 lg:col-span-1' %>">
+            <div class="relative h-full overflow-hidden">
+              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" data-fallback-src="/images/photographer.webp" />
               <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent"></div>
               <a href="/portfolio/<%= project._id %>" class="event-button">View event</a>
             </div>

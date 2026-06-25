@@ -4,7 +4,7 @@
   <section class="hero">
     <div class="grid min-h-[calc(100vh-5rem)] bg-dawn-700 lg:grid-cols-[.9fr_1.1fr]">
       <div class="relative min-h-[620px] overflow-hidden">
-        <img src="/images/vc_wedding.png" alt="Bride photographed by MTC Studio" class="absolute inset-0 h-full w-full object-cover object-center" />
+        <img src="/images/vc_wedding.png" alt="Bride photographed by MTC Studio" class="absolute inset-0 h-full w-full object-cover object-center" data-fallback-src="/images/photographer.webp" />
         <div class="absolute inset-0 bg-gradient-to-r from-dawn-950/30 via-transparent to-dawn-950/10"></div>
         <div class="mx-auto mt-80 max-w-xs rounded-lg border border-white/30 bg-dawn-950/75 p-5 text-white backdrop-blur md:absolute md:bottom-12 md:right-12">
           <p class="font-display text-2xl">MTC Studio</p>
@@ -28,7 +28,7 @@
   <section class="about section-pad overflow-hidden bg-dawn-900">
     <div class="site-container grid items-center gap-12 lg:grid-cols-2">
       <div data-reveal class="relative">
-        <img src="/images/photographer.webp" alt="Photographer holding a camera" class="h-[540px] w-full rounded-md object-cover" />
+        <img src="/images/photographer.webp" alt="Photographer holding a camera" class="h-[540px] w-full rounded-md object-cover" data-fallback-src="/images/vc_wedding.png" />
         <div class="absolute -bottom-7 -right-3 hidden w-52 rounded-md bg-gold-300 p-6 text-dawn-950 sm:block">
           <p class="font-display text-4xl font-semibold">5+</p>
           <p class="mt-1 text-xs font-bold uppercase tracking-[.16em]">Years creating memories</p>
@@ -74,7 +74,7 @@
         <% projects.forEach((project, index) => { %>
           <article data-reveal="<%= index * 80 %>" class="portfolio-card group rounded-md">
             <div class="relative overflow-hidden">
-              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" />
+              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" data-fallback-src="/images/photographer.webp" />
               <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent"></div>
               <a href="/portfolio/<%= project._id %>" class="event-button">View event</a>
             </div>

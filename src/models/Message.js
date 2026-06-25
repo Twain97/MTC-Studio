@@ -4,6 +4,8 @@ const replySchema = new mongoose.Schema(
   {
     body: { type: String, required: true },
     contractPath: String,
+    adminName: String,
+    adminEmail: String,
     sentAt: { type: Date, default: Date.now }
   },
   { _id: false }
@@ -28,4 +30,3 @@ const messageSchema = new mongoose.Schema(
 messageSchema.index({ isRead: 1, createdAt: -1 })
 
 export const Message = mongoose.model('Message', messageSchema)
-

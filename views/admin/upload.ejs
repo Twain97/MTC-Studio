@@ -15,19 +15,29 @@
       <div class="mt-6 grid gap-6 sm:grid-cols-2">
         <label class="upload-box">
           <strong>Choose thumbnail</strong>
-          <span>JPG, PNG or WebP, up to 20MB</span>
+          <span>JPG, PNG or WebP, up to 10MB</span>
           <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="sr-only" required data-thumbnail-input />
         </label>
-        <img src="" alt="Thumbnail preview" class="hidden h-44 w-full object-cover" data-thumbnail-preview />
-        <div class="grid h-44 place-items-center bg-dawn-100 text-xs uppercase tracking-[.14em] text-dawn-400" data-thumbnail-placeholder>Thumbnail preview</div>
+        <div class="grid h-44 place-items-center border border-dashed border-dawn-300 bg-dawn-50 text-xs uppercase tracking-[.14em] text-dawn-400" data-thumbnail-placeholder>Thumbnail preview</div>
+        <figure class="hidden overflow-hidden border border-dawn-200 bg-white" data-thumbnail-preview-card>
+          <img src="" alt="Thumbnail preview" class="h-44 w-full object-cover" data-thumbnail-preview />
+          <figcaption class="grid gap-1 border-t border-dawn-200 p-3 text-xs text-dawn-500">
+            <strong class="text-sm text-dawn-800" data-thumbnail-name></strong>
+            <span data-thumbnail-size></span>
+          </figcaption>
+        </figure>
       </div>
 
       <label class="upload-box mt-6">
-        <strong>Choose up to 5 event images</strong>
+        <strong>Choose up to 10 event images</strong>
         <span>These appear inside the event gallery</span>
         <input type="file" name="images" multiple accept="image/jpeg,image/png,image/webp" class="sr-only" data-images-input />
       </label>
-      <div class="mt-4 hidden grid-cols-2 gap-3 sm:grid-cols-5" data-gallery-previews></div>
+      <div class="mt-4 hidden gap-3 sm:grid-cols-2 lg:grid-cols-5" data-gallery-previews></div>
+      <p class="mt-3 text-xs text-dawn-500" data-upload-progress>Upload progress: 0%</p>
+      <div class="mt-2 h-2 overflow-hidden rounded-full bg-dawn-100">
+        <div class="h-full w-0 rounded-full bg-gold-400 transition-all duration-150" data-upload-progress-bar></div>
+      </div>
 
       <label class="mt-6 flex items-center gap-3 text-sm font-semibold"><input name="featured" type="checkbox" class="h-4 w-4 accent-gold-600" /> Feature this event on the home page</label>
       <p class="mt-5 hidden text-sm" data-upload-notice></p>
@@ -43,6 +53,18 @@
       <div class="mt-5 grid gap-4" data-projects-list></div>
     </aside>
   </div>
+</div>
+<div class="fixed inset-0 z-[60] hidden items-center justify-center bg-dawn-950/90 p-4 backdrop-blur" data-upload-lightbox>
+  <button type="button" class="absolute inset-0 z-0 cursor-zoom-out" aria-label="Close image viewer" data-upload-lightbox-close></button>
+  <figure class="relative z-10 grid w-full max-w-6xl gap-4">
+    <button type="button" class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-dawn-950/80 text-white shadow-lg transition hover:bg-gold-300 hover:text-dawn-950" aria-label="Close image viewer" data-upload-lightbox-close>
+      <svg viewBox="0 0 24 24" class="h-5 w-5 fill-none stroke-current" stroke-width="2">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+    <img src="" alt="" class="max-h-[85vh] w-full rounded-[2rem] object-contain shadow-2xl" data-upload-lightbox-image />
+    <figcaption class="text-center text-sm text-dawn-100" data-upload-lightbox-caption></figcaption>
+  </figure>
 </div>
 <script src="/js/admin-upload.js" defer></script>
 <%- include('../partials/admin-shell-end') %>

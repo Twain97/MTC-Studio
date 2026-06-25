@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema(
     thumbnail: { type: String, required: true },
     images: {
       type: [String],
-      validate: [(value) => value.length <= 5, 'A project can contain at most five gallery images.']
+      validate: [(value) => value.length <= 10, 'A project can contain at most ten gallery images.']
     },
     featured: { type: Boolean, default: false }
   },
@@ -19,4 +19,3 @@ const projectSchema = new mongoose.Schema(
 projectSchema.index({ eventDate: -1 })
 
 export const Project = mongoose.model('Project', projectSchema)
-

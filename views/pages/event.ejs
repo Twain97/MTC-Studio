@@ -2,7 +2,7 @@
 <%- include('../partials/site-header', { page }) %>
 <main>
   <section class="relative min-h-[72vh] overflow-hidden bg-dawn-950">
-    <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="absolute inset-0 h-full w-full object-cover opacity-75" />
+    <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="absolute inset-0 h-full w-full object-cover opacity-75" data-fallback-src="/images/photographer.webp" />
     <div class="absolute inset-0 bg-gradient-to-t from-dawn-950 via-dawn-950/30 to-transparent"></div>
     <div class="site-container relative z-10 flex min-h-[72vh] items-end pb-16 text-white">
       <div>
@@ -18,14 +18,35 @@
   <section class="section-pad bg-white">
     <div class="site-container">
       <% if (project.description) { %><p data-reveal class="mx-auto max-w-3xl text-center font-display text-3xl leading-snug text-dawn-800 md:text-4xl"><%= project.description %></p><% } %>
-      <div class="mt-14 grid gap-5 md:grid-cols-2">
+      <div class="mt-14 grid grid-cols-2 auto-rows-[10rem] gap-4 sm:grid-cols-3 sm:auto-rows-[12rem] lg:grid-cols-6 lg:auto-rows-[12rem] lg:gap-5">
         <% project.images.forEach((image, index) => { %>
-          <img data-reveal="<%= index * 70 %>" src="<%= image %>" alt="<%= project.eventName %> photograph <%= index + 1 %>" class="h-[480px] w-full object-cover <%= index === 0 && project.images.length % 2 ? 'md:col-span-2 md:h-[650px]' : '' %>" />
+          <button
+            type="button"
+            class="group relative overflow-hidden rounded-sm shadow-sm outline-none transition duration-300 hover:-translate-y-1 hover:shadow-xl focus:ring-2 focus:ring-gold-400 <%= index % 5 === 0 ? 'col-span-2 row-span-2 sm:col-span-2 lg:col-span-3 lg:row-span-2' : index % 5 === 1 ? 'col-span-1 row-span-1 sm:col-span-1 lg:col-span-2' : 'col-span-1 row-span-1 lg:col-span-1' %>"
+            data-image-open="<%= image %>"
+            data-image-title="<%= project.eventName %> photograph <%= index + 1 %>"
+            data-reveal="<%= index * 70 %>"
+          >
+            <img src="<%= image %>" alt="<%= project.eventName %> photograph <%= index + 1 %>" class="h-full min-h-full w-full object-cover transition duration-700 group-hover:scale-105" data-fallback-src="/images/photographer.webp" />
+            <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-dawn-950/70 via-transparent to-transparent p-4 text-left text-xs font-bold uppercase tracking-[.14em] text-white opacity-0 transition group-hover:opacity-100">View full size</span>
+          </button>
         <% }) %>
       </div>
     </div>
   </section>
 </main>
+<div class="fixed inset-0 z-[60] hidden items-center justify-center bg-dawn-950/90 p-4 backdrop-blur" data-lightbox>
+  <button type="button" class="absolute inset-0 z-0 cursor-zoom-out" aria-label="Close image viewer" data-lightbox-close></button>
+  <figure class="relative z-10 grid w-full max-w-6xl gap-4">
+    <button type="button" class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-dawn-950/80 text-white shadow-lg transition hover:bg-gold-300 hover:text-dawn-950" aria-label="Close image viewer" data-lightbox-close>
+      <svg viewBox="0 0 24 24" class="h-5 w-5 fill-none stroke-current" stroke-width="2">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
+    <img src="" alt="" class="max-h-[85vh] w-full rounded-sm object-contain shadow-2xl" data-lightbox-image />
+    <figcaption class="text-center text-sm text-dawn-100" data-lightbox-caption></figcaption>
+  </figure>
+</div>
 <%- include('../partials/site-footer') %>
 <%- include('../partials/whatsapp', { whatsappNumber }) %>
 <%- include('../partials/site-scripts') %>

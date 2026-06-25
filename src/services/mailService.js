@@ -16,18 +16,33 @@ function createTransporter() {
   })
 }
 
+function studioFrom() {
+  return {
+    name: 'MTC Studio',
+    address: env.smtp.user || env.adminEmail
+  }
+}
+
 export async function notifyAdmin(message) {
   const transporter = createTransporter()
   if (!transporter) return { status: 'not_configured' }
 
   try {
     await transporter.sendMail({
-      from: env.smtp.from,
+      from: studioFrom(),
       to: env.adminEmail,
-      replyTo: message.email,
+      replyTo: { name: message.name, address: message.email },
       subject: `New website inquiry: ${message.subject}`,
-      text: `${message.name} (${message.email}${message.phone ? `, ${message.phone}` : ''}) wrote:\n\n${message.body}`,
-      html: `<h2>New MTC Studio inquiry</h2><p><strong>From:</strong> ${message.name} &lt;${message.email}&gt;</p><p><strong>Subject:</strong> ${message.subject}</p><p>${message.body.replace(/\n/g, '<br>')}</p>`
+      text: [
+        'New MTC Studio inquiry',
+        '',
+        `From: ${message.name} <${message.email}>`,
+        message.phone ? `Phone: ${message.phone}` : null,
+        `Subject: ${message.subject}`,
+        '',
+        message.body
+      ].filter(Boolean).join('\n'),
+      html: `<h2>New MTC Studio inquiry</h2><p><strong>From:</strong> ${message.name} &lt;${message.email}&gt;</p>${message.phone ? `<p><strong>Phone:</strong> ${message.phone}</p>` : ''}<p><strong>Subject:</strong> ${message.subject}</p><p>${message.body.replace(/\n/g, '<br>')}</p>`
     })
     return { status: 'sent' }
   } catch (error) {
@@ -35,7 +50,7 @@ export async function notifyAdmin(message) {
   }
 }
 
-export async function replyToClient(message, body, contract) {
+export async function replyToClient(message, body, contract, admin = {}) {
   const transporter = createTransporter()
   if (!transporter) {
     const error = new Error('SMTP is not configured. Add SMTP credentials to .env before replying.')
@@ -48,13 +63,19 @@ export async function replyToClient(message, body, contract) {
     : []
 
   await transporter.sendMail({
-    from: env.smtp.from,
+    from: studioFrom(),
     to: message.email,
-    replyTo: env.adminEmail,
-    subject: `Re: ${message.subject}`,
-    text: body,
+    replyTo: { name: admin.name || env.adminName, address: admin.email || env.adminEmail },
+    subject: `MTC Studio reply: ${message.subject}`,
+    text: [
+      `Hello ${message.name},`,
+      '',
+      body,
+      '',
+      'Regards,',
+      'MTC Studio'
+    ].join('\n'),
     html: `<p>Hello ${message.name},</p><p>${body.replace(/\n/g, '<br>')}</p><p>Regards,<br>MTC Studio</p>`,
     attachments
   })
 }
-

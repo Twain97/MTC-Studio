@@ -26,7 +26,7 @@ const values = [
 
 router.get('/', async (_req, res, next) => {
   try {
-    const projects = await getPortfolioProjects({ limit: 4 })
+    const projects = await getPortfolioProjects({ limit: 3 })
     res.render('pages/home', { title: 'MTC Studio', page: 'home', projects, services, pricing })
   } catch (error) {
     next(error)
@@ -39,7 +39,7 @@ router.get('/about', (_req, res) => {
 
 router.get('/portfolio', async (_req, res, next) => {
   try {
-    const projects = await getPortfolioProjects()
+    const projects = await getPortfolioProjects({ limit: 3 })
     res.render('pages/portfolio', { title: 'Portfolio', page: 'portfolio', projects })
   } catch (error) {
     next(error)
@@ -74,6 +74,14 @@ router.get('/admin/dashboard', (_req, res) => {
 
 router.get('/admin/messages', (_req, res) => {
   res.render('admin/messages', { title: 'Messages', page: 'admin-messages' })
+})
+
+router.get('/admin/messages/:id', (req, res) => {
+  res.render('admin/message', {
+    title: 'Message',
+    page: 'admin-message',
+    messageId: req.params.id
+  })
 })
 
 router.get('/admin/upload', (_req, res) => {

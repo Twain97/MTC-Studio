@@ -12,7 +12,7 @@
     </div>
     <nav class="grid gap-2 p-4">
       <a href="/admin/dashboard" class="admin-nav-link <%= page === 'admin-dashboard' ? 'is-active' : '' %>">Overview</a>
-      <a href="/admin/messages" class="admin-nav-link <%= page === 'admin-messages' ? 'is-active' : '' %>">Messages</a>
+      <a href="/admin/messages" class="admin-nav-link <%= page === 'admin-messages' || page === 'admin-message' ? 'is-active' : '' %>">Messages</a>
       <a href="/admin/upload" class="admin-nav-link <%= page === 'admin-upload' ? 'is-active' : '' %>">Upload project</a>
     </nav>
     <div class="absolute bottom-0 left-0 right-0 border-t border-white/10 p-5">

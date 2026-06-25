@@ -8,7 +8,7 @@ import { imageUpload, publicUploadPath, uploadRoot } from '../middleware/upload.
 const router = Router()
 const projectUploads = imageUpload.fields([
   { name: 'thumbnail', maxCount: 1 },
-  { name: 'images', maxCount: 5 }
+  { name: 'images', maxCount: 10 }
 ])
 
 router.get('/', async (_req, res, next) => {
@@ -117,4 +117,3 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
 })
 
 export default router
-
