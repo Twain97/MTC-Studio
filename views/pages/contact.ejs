@@ -1,0 +1,31 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main>
+  <section class="page-hero">
+    <div class="site-container relative z-10 py-24 text-center md:py-32">
+      <p class="eyebrow text-gold-300">Book MTC Studio</p>
+      <h1 class="mt-4 font-display text-5xl font-semibold text-white md:text-7xl">Let us create something lasting</h1>
+      <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-dawn-100">Tell us about your date, your people, and the story you want photographed.</p>
+    </div>
+  </section>
+  <section class="contact section-pad bg-white">
+    <div class="site-container grid gap-12 lg:grid-cols-[.7fr_1.3fr]">
+      <aside data-reveal class="bg-dawn-950 p-8 text-white sm:p-10">
+        <p class="eyebrow text-gold-300">Studio details</p>
+        <h2 class="mt-4 font-display text-4xl">We would love to hear from you.</h2>
+        <p class="mt-5 text-sm leading-7 text-dawn-200">For availability and collection details, send an inquiry with as much information as you have.</p>
+        <div class="mt-9 grid gap-6 border-t border-white/10 pt-8 text-sm">
+          <a href="mailto:admin@mtcstudio.com">admin@mtcstudio.com</a>
+          <p>Lagos, Nigeria</p>
+          <p>Replies within one business day</p>
+        </div>
+      </aside>
+      <div data-reveal="100" class="border border-dawn-200 p-6 sm:p-10">
+        <%- include('../partials/contact-form') %>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/whatsapp', { whatsappNumber }) %>
+<%- include('../partials/site-scripts') %>

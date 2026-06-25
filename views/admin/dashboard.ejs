@@ -1,0 +1,29 @@
+<%- include('../partials/admin-head', { title }) %>
+<%- include('../partials/admin-shell-start', { page }) %>
+<div>
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <p class="eyebrow text-gold-700">Overview</p>
+      <h1 class="mt-2 font-display text-4xl font-semibold">Studio activity</h1>
+    </div>
+    <a href="/admin/upload" class="btn-dark">Upload new project</a>
+  </div>
+  <p class="mt-12 text-dawn-500" data-dashboard-loading>Loading dashboard...</p>
+  <p class="mt-12 hidden text-red-700" data-dashboard-error></p>
+  <div class="hidden" data-dashboard-content>
+    <section class="mt-9 grid gap-5 sm:grid-cols-2 xl:grid-cols-4" data-dashboard-metrics></section>
+    <section class="mt-8 border border-dawn-200 bg-white">
+      <div class="flex items-center justify-between border-b border-dawn-200 p-6">
+        <div>
+          <p class="eyebrow text-gold-700">Inbox</p>
+          <h2 class="mt-2 font-display text-3xl">Recent inquiries</h2>
+        </div>
+        <a href="/admin/messages" class="text-xs font-bold uppercase tracking-[.14em] text-dawn-700">View all</a>
+      </div>
+      <div data-dashboard-messages></div>
+    </section>
+  </div>
+</div>
+<script src="/js/admin-dashboard.js" defer></script>
+<%- include('../partials/admin-shell-end') %>
+<%- include('../partials/admin-foot') %>

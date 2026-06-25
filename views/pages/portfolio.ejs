@@ -1,0 +1,36 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main>
+  <section class="page-hero">
+    <div class="site-container relative z-10 py-24 text-center md:py-32">
+      <p class="eyebrow text-gold-300">Selected stories</p>
+      <h1 class="mt-4 font-display text-5xl font-semibold text-white md:text-7xl">Portfolio</h1>
+      <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-dawn-100">Weddings, portraits, celebrations, and commercial stories photographed with clarity and warmth.</p>
+    </div>
+  </section>
+  <section class="portfolio section-pad bg-dawn-50">
+    <div class="site-container">
+      <div class="grid gap-7 md:grid-cols-2">
+        <% projects.forEach((project, index) => { %>
+          <article data-reveal="<%= index * 70 %>" class="portfolio-card group rounded-md">
+            <div class="relative overflow-hidden">
+              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %>" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" />
+              <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent"></div>
+              <a href="/portfolio/<%= project._id %>" class="event-button">View event</a>
+            </div>
+            <div class="p-5">
+              <h2 class="font-display text-2xl font-semibold text-dawn-950"><%= project.eventName %></h2>
+              <div class="mt-4 flex items-center justify-between gap-3 border-t border-dawn-200 pt-4 text-xs font-semibold uppercase tracking-[.12em] text-dawn-600">
+                <span><%= new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(new Date(project.eventDate)) %></span>
+                <span class="text-right"><%= project.location %></span>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/whatsapp', { whatsappNumber }) %>
+<%- include('../partials/site-scripts') %>

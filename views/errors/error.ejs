@@ -1,0 +1,11 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main class="grid min-h-[60vh] place-items-center px-6 text-center">
+  <div>
+    <h1 class="font-display text-5xl">Unexpected server error</h1>
+    <p class="mt-4 text-dawn-600"><%= message %></p>
+    <a href="/" class="btn-dark mt-7">Back to home</a>
+  </div>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/site-scripts') %>

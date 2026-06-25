@@ -1,0 +1,38 @@
+<div class="min-h-screen bg-dawn-50 lg:grid lg:grid-cols-[270px_1fr]">
+  <aside class="fixed inset-y-0 left-0 z-50 w-[270px] -translate-x-full bg-dawn-950 text-white transition lg:static lg:translate-x-0" data-admin-sidebar>
+    <div class="flex h-24 items-center justify-between border-b border-white/10 px-6">
+      <span class="logo-crop" aria-label="MTC Studio">
+        <img src="/images/mtc-studio.png" alt="MTC Studio" />
+      </span>
+      <button class="lg:hidden" aria-label="Close admin menu" data-admin-sidebar-close>
+        <svg viewBox="0 0 24 24" class="h-6 w-6 fill-none stroke-current" stroke-width="2">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
+    <nav class="grid gap-2 p-4">
+      <a href="/admin/dashboard" class="admin-nav-link <%= page === 'admin-dashboard' ? 'is-active' : '' %>">Overview</a>
+      <a href="/admin/messages" class="admin-nav-link <%= page === 'admin-messages' ? 'is-active' : '' %>">Messages</a>
+      <a href="/admin/upload" class="admin-nav-link <%= page === 'admin-upload' ? 'is-active' : '' %>">Upload project</a>
+    </nav>
+    <div class="absolute bottom-0 left-0 right-0 border-t border-white/10 p-5">
+      <p class="truncate text-sm font-semibold" data-admin-name>MTC Studio Admin</p>
+      <p class="mt-1 truncate text-xs text-dawn-300" data-admin-email></p>
+      <button class="mt-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[.14em] text-gold-300" data-admin-logout>Log out</button>
+    </div>
+  </aside>
+
+  <div>
+    <header class="flex h-20 items-center justify-between border-b border-dawn-200 bg-white px-5 sm:px-8">
+      <button class="rounded border border-dawn-200 p-2 lg:hidden" aria-label="Open admin menu" data-admin-sidebar-open>
+        <svg viewBox="0 0 24 24" class="h-6 w-6 fill-none stroke-current" stroke-width="2">
+          <path d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[.18em] text-gold-700">Admin dashboard</p>
+        <p class="mt-1 text-sm text-dawn-500">Manage MTC Studio</p>
+      </div>
+      <a href="/" target="_blank" class="text-xs font-bold uppercase tracking-[.14em] text-dawn-700">View website</a>
+    </header>
+    <main class="p-5 sm:p-8 lg:p-10">

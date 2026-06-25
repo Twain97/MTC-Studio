@@ -1,0 +1,13 @@
+<form class="grid gap-5" data-contact-form>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <label class="form-label">Your name<input name="name" class="rounded-lg form-input" required /></label>
+    <label class="form-label">Email address<input name="email" type="email" class="rounded-lg form-input" required /></label>
+  </div>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <label class="form-label">Phone number<input name="phone" type="tel" class="rounded-lg form-input" /></label>
+    <label class="form-label">Subject<input name="subject" class="rounded-lg form-input" required /></label>
+  </div>
+  <label class="form-label">Tell us about your event<textarea name="message" rows="6" class="rounded-lg form-input resize-none" required></textarea></label>
+  <p class="hidden text-sm" data-contact-notice></p>
+  <button class="btn-gold rounded-lg w-fit" type="submit" data-submit-label="Send inquiry">Send inquiry</button>
+</form>

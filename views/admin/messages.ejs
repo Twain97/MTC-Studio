@@ -1,0 +1,20 @@
+<%- include('../partials/admin-head', { title }) %>
+<%- include('../partials/admin-shell-start', { page }) %>
+<div>
+  <p class="eyebrow text-gold-700">Client communication</p>
+  <h1 class="mt-2 font-display text-4xl font-semibold">Messages</h1>
+  <p class="mt-10 text-dawn-500" data-messages-loading>Loading messages...</p>
+  <div class="mt-8 hidden min-h-[680px] overflow-hidden border border-dawn-200 bg-white xl:grid-cols-[360px_1fr]" data-messages-shell>
+    <aside class="border-b border-dawn-200 xl:border-b-0 xl:border-r">
+      <div class="border-b border-dawn-200 p-5 text-sm font-semibold">Inbox <span class="ml-2 rounded-full bg-dawn-100 px-2 py-1 text-xs" data-message-count>0</span></div>
+      <div data-message-list></div>
+    </aside>
+    <section class="grid place-items-center p-10 text-center text-dawn-400" data-message-empty-state>
+      <div><p class="mt-4">Select a message to read it.</p></div>
+    </section>
+    <section class="hidden min-w-0 flex-col" data-message-detail></section>
+  </div>
+</div>
+<script src="/js/admin-messages.js" defer></script>
+<%- include('../partials/admin-shell-end') %>
+<%- include('../partials/admin-foot') %>

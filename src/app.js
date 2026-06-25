@@ -1,0 +1,45 @@
+import express from 'express'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import helmet from 'helmet'
+import morgan from 'morgan'
+import { env } from './config/env.js'
+import siteRoutes from './routes/site.js'
+import authRoutes from './routes/auth.js'
+import projectRoutes from './routes/projects.js'
+import messageRoutes from './routes/messages.js'
+import dashboardRoutes from './routes/dashboard.js'
+import { errorHandler, notFound } from './middleware/error.js'
+import { uploadRoot } from './middleware/upload.js'
+
+const currentDir = path.dirname(fileURLToPath(import.meta.url))
+const app = express()
+
+app.set('trust proxy', 1)
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.set('view engine', 'ejs')
+app.set('views', path.resolve(currentDir, '../views'))
+app.use(express.json({ limit: '1mb' }))
+app.use(express.urlencoded({ extended: true }))
+app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
+app.use(express.static(path.resolve(currentDir, '../public'), { maxAge: '7d', immutable: true }))
+app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', immutable: true }))
+
+app.use((req, res, next) => {
+  res.locals.whatsappNumber = env.whatsappNumber
+  res.locals.page = ''
+  next()
+})
+
+app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
+
+app.use('/', siteRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/projects', projectRoutes)
+app.use('/api/messages', messageRoutes)
+app.use('/api/dashboard', dashboardRoutes)
+
+app.use(notFound)
+app.use(errorHandler)
+
+export default app

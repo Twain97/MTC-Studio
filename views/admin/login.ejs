@@ -1,0 +1,31 @@
+<%- include('../partials/admin-head', { title }) %>
+<main class="grid min-h-screen bg-dawn-950 lg:grid-cols-2">
+  <section class="relative hidden overflow-hidden lg:block">
+    <img src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1400&q=85" alt="Professional camera" class="absolute inset-0 h-full w-full object-cover opacity-65" />
+    <div class="absolute inset-0 bg-gradient-to-t from-dawn-950 via-transparent to-dawn-950/20"></div>
+    <div class="absolute bottom-14 left-14 max-w-lg text-white">
+      <p class="eyebrow text-gold-300">MTC Studio</p>
+      <h1 class="mt-5 font-display text-6xl">Manage the stories behind the work.</h1>
+    </div>
+  </section>
+  <section class="flex items-center justify-center px-6 py-14">
+    <div class="w-full max-w-md bg-white p-7 shadow-2xl sm:p-10">
+      <span class="logo-crop" aria-label="MTC Studio">
+        <img src="/images/mtc-studio.png" alt="MTC Studio" />
+      </span>
+      <div class="mt-9">
+        <h2 class="font-display text-3xl">Admin login</h2>
+        <p class="text-sm text-dawn-500">Authorized access only</p>
+      </div>
+      <form class="mt-8 grid gap-5" data-admin-login-form>
+        <label class="form-label">Admin email<input name="email" type="email" class="form-input" required autocomplete="email" /></label>
+        <label class="form-label">Password<input name="password" type="password" class="form-input" required autocomplete="current-password" /></label>
+        <p class="hidden text-sm text-red-700" data-admin-login-error></p>
+        <button class="btn-dark w-full justify-center" type="submit" data-submit-label="Sign in">Sign in</button>
+      </form>
+      <a href="/" class="mt-7 block text-center text-xs font-bold uppercase tracking-[.14em] text-dawn-500">Return to website</a>
+    </div>
+  </section>
+</main>
+<script src="/js/admin-login.js" defer></script>
+<%- include('../partials/admin-foot') %>
