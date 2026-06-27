@@ -14,9 +14,16 @@ import { uploadRoot } from './middleware/upload.js'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
+const siteUrl = env.siteUrl.replace(/\/+$/, '')
 
 app.set('trust proxy', 1)
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
+app.use((req, res, next) => {
+  if (env.nodeEnv === 'production' && env.enforceHttps && !req.secure) {
+    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`)
+  }
+  next()
+})
 app.set('view engine', 'ejs')
 app.set('views', path.resolve(currentDir, '../views'))
 app.use(express.json({ limit: '1mb' }))
@@ -27,7 +34,20 @@ app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', immutable: true }
 
 app.use((req, res, next) => {
   res.locals.whatsappNumber = env.whatsappNumber
+  res.locals.business = env.business
+  res.locals.socialLinks = [
+    { name: 'Instagram', url: env.business.instagramUrl },
+    { name: 'TikTok', url: env.business.tiktokUrl },
+    { name: 'Facebook', url: env.business.facebookUrl }
+  ].filter((link) => link.url)
   res.locals.page = ''
+  res.locals.siteUrl = siteUrl
+  res.locals.currentUrl = `${siteUrl}${req.originalUrl.split('?')[0] || '/'}`
+  res.locals.defaultSeo = {
+    title: 'MTC Studio | Wedding and Portrait Photography in Lagos',
+    description: 'MTC Studio creates refined wedding, portrait, event, and brand photography in Lagos and across Nigeria.',
+    image: `${siteUrl}/images/mtc-studio.png`
+  }
   next()
 })
 

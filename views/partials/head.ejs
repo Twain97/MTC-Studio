@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <%
+    const meta = typeof seo !== 'undefined' ? seo : {}
+    const defaults = typeof defaultSeo !== 'undefined' ? defaultSeo : {}
+    const metaTitle = meta.title || title || defaults.title || 'MTC Studio'
+    const metaDescription = meta.description || defaults.description || 'Photography by MTC Studio.'
+    const metaCanonical = meta.canonical || (typeof currentUrl !== 'undefined' ? currentUrl : '')
+    const metaImage = meta.image || defaults.image || '/images/mtc-studio.png'
+    const metaType = meta.type || 'website'
+    const metaRobots = meta.robots || 'index, follow'
+  %>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
+  <title><%= metaTitle %></title>
+  <meta name="description" content="<%= metaDescription %>" />
+  <meta name="robots" content="<%= metaRobots %>" />
+  <% if (metaCanonical) { %><link rel="canonical" href="<%= metaCanonical %>" /><% } %>
+  <meta property="og:site_name" content="MTC Studio" />
+  <meta property="og:title" content="<%= metaTitle %>" />
+  <meta property="og:description" content="<%= metaDescription %>" />
+  <meta property="og:type" content="<%= metaType %>" />
+  <% if (metaCanonical) { %><meta property="og:url" content="<%= metaCanonical %>" /><% } %>
+  <meta property="og:image" content="<%= metaImage %>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<%= metaTitle %>" />
+  <meta name="twitter:description" content="<%= metaDescription %>" />
+  <meta name="twitter:image" content="<%= metaImage %>" />
   <link rel="icon" href="/images/favicon.ico" />
   <link rel="stylesheet" href="/css/app.css" />
+  <% if (meta.schema) { %>
+  <script type="application/ld+json"><%- JSON.stringify(meta.schema) %></script>
+  <% } %>
 </head>
 <body class="<%= bodyClass || '' %>">

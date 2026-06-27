@@ -3,7 +3,11 @@ export function notFound(req, res) {
     return res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` })
   }
 
-  res.status(404).render('errors/not-found', { title: 'Page not found', page: '' })
+  res.status(404).render('errors/not-found', {
+    title: 'Page not found',
+    page: '',
+    seo: { robots: 'noindex, follow' }
+  })
 }
 
 export function errorHandler(error, _req, res, _next) {
@@ -24,6 +28,7 @@ export function errorHandler(error, _req, res, _next) {
   res.status(error.status || 500).render('errors/error', {
     title: 'Server error',
     page: '',
-    message: error.message || 'Unexpected server error.'
+    message: error.message || 'Unexpected server error.',
+    seo: { robots: 'noindex, follow' }
   })
 }

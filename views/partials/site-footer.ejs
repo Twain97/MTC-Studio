@@ -17,9 +17,17 @@
     <div>
       <h2 class="eyebrow text-gold-300">Contact</h2>
       <div class="mt-4 grid gap-3 text-sm text-dawn-100">
-        <a href="mailto:admin@mtcstudio.com">admin@mtcstudio.com</a>
-        <p>Lagos, Nigeria</p>
-        <a href="#">@mtcstudio</a>
+        <a href="mailto:<%= business.email %>"><%= business.email %></a>
+        <a href="tel:<%= business.phone %>"><%= business.phone %></a>
+        <p><%= business.address %></p>
+        <p>Serving <%= business.serviceArea %></p>
+        <% if (socialLinks.length) { %>
+          <div class="flex flex-wrap gap-3 pt-1">
+            <% socialLinks.forEach((social) => { %>
+              <a href="<%= social.url %>" target="_blank" rel="noopener noreferrer"><%= social.name %></a>
+            <% }) %>
+          </div>
+        <% } %>
       </div>
     </div>
   </div>
