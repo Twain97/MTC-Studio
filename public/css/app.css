@@ -1203,6 +1203,10 @@ button:disabled{
   margin-top: 0px;
 }
 
+.mt-0\.5{
+  margin-top: 0.125rem;
+}
+
 .mt-1{
   margin-top: 0.25rem;
 }
@@ -1563,6 +1567,10 @@ button:disabled{
 
 .gap-1{
   gap: 0.25rem;
+}
+
+.gap-1\.5{
+  gap: 0.375rem;
 }
 
 .gap-12{
@@ -2506,6 +2514,11 @@ button:disabled{
 .hover\:text-dawn-950:hover{
   --tw-text-opacity: 1;
   color: rgb(23 35 44 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-gold-300:hover{
+  --tw-text-opacity: 1;
+  color: rgb(228 197 116 / var(--tw-text-opacity, 1));
 }
 
 .hover\:shadow-xl:hover{

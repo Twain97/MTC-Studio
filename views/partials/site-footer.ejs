@@ -1,3 +1,8 @@
+<%
+  const footerIconClass = 'mt-0.5 h-4 w-4 shrink-0 fill-none stroke-current text-gold-300'
+  const footerLinkClass = 'inline-flex items-start gap-2 transition hover:text-gold-300'
+  const footerSocialIconClass = 'h-4 w-4 shrink-0 text-gold-300'
+%>
 <footer class="bg-dawn-950 text-white">
   <div class="site-container grid gap-6 py-7 md:grid-cols-[1.2fr_.8fr_.8fr]">
     <div>
@@ -9,22 +14,91 @@
     <div>
       <h2 class="eyebrow text-gold-300">Explore</h2>
       <div class="mt-4 grid gap-3 text-sm text-dawn-100">
-        <a href="/about">About the studio</a>
-        <a href="/portfolio">Selected work</a>
-        <a href="/contact">Book a session</a>
+        <a href="/about" class="<%= footerLinkClass %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
+          </svg>
+          <span>About the studio</span>
+        </a>
+        <a href="/portfolio" class="<%= footerLinkClass %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m3 15 5-5 4 4 3-3 6 6"></path>
+          </svg>
+          <span>Selected work</span>
+        </a>
+        <a href="/contact" class="<%= footerLinkClass %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <path d="M8 2v4"></path>
+            <path d="M16 2v4"></path>
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <path d="M3 10h18"></path>
+            <path d="m9 16 2 2 4-4"></path>
+          </svg>
+          <span>Book a session</span>
+        </a>
       </div>
     </div>
     <div>
       <h2 class="eyebrow text-gold-300">Contact</h2>
       <div class="mt-4 grid gap-3 text-sm text-dawn-100">
-        <a href="mailto:<%= business.email %>"><%= business.email %></a>
-        <a href="tel:<%= business.phone %>"><%= business.phone %></a>
-        <p><%= business.address %></p>
-        <p>Serving <%= business.serviceArea %></p>
+        <a href="mailto:<%= business.email %>" class="<%= footerLinkClass %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m3 7 9 6 9-6"></path>
+          </svg>
+          <span><%= business.email %></span>
+        </a>
+        <a href="tel:<%= business.phone %>" class="<%= footerLinkClass %>">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.59 2.63a2 2 0 0 1-.45 2.11L8 9.71a16 16 0 0 0 6 6l1.24-1.24a2 2 0 0 1 2.11-.45c.85.27 1.73.47 2.63.59A2 2 0 0 1 22 16.92Z"></path>
+          </svg>
+          <span><%= business.phone %></span>
+        </a>
+        <p class="inline-flex items-start gap-2">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span><%= business.address %></span>
+        </p>
+        <p class="inline-flex items-start gap-2">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerIconClass %>" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12Z"></path>
+          </svg>
+          <span>Serving <%= business.serviceArea %></span>
+        </p>
         <% if (socialLinks.length) { %>
           <div class="flex flex-wrap gap-3 pt-1">
             <% socialLinks.forEach((social) => { %>
-              <a href="<%= social.url %>" target="_blank" rel="noopener noreferrer"><%= social.name %></a>
+              <% const socialName = social.name.toLowerCase() %>
+              <a href="<%= social.url %>" class="inline-flex items-center gap-1.5 transition hover:text-gold-300" target="_blank" rel="noopener noreferrer">
+                <% if (socialName.includes('instagram')) { %>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerSocialIconClass %> fill-none stroke-current" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+                  </svg>
+                <% } else if (socialName.includes('tiktok')) { %>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerSocialIconClass %> fill-current">
+                    <path d="M16.6 2c.26 1.78 1.3 3.25 2.93 4.16.74.42 1.55.66 2.47.73v3.45a8.38 8.38 0 0 1-5.28-1.78v6.84A6.6 6.6 0 1 1 10.12 8.8c.42 0 .82.04 1.2.11v3.58a3.05 3.05 0 1 0 2.08 2.91V2h3.2Z"></path>
+                  </svg>
+                <% } else if (socialName.includes('facebook')) { %>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerSocialIconClass %> fill-current">
+                    <path d="M14 8h3V4h-3.5A5.5 5.5 0 0 0 8 9.5V12H5v4h3v6h4v-6h3.2l.8-4h-4V9.5A1.5 1.5 0 0 1 13.5 8H14Z"></path>
+                  </svg>
+                <% } else { %>
+                  <svg viewBox="0 0 24 24" aria-hidden="true" class="<%= footerSocialIconClass %> fill-none stroke-current" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M8 12h8"></path>
+                    <path d="M12 8v8"></path>
+                  </svg>
+                <% } %>
+                <span><%= social.name %></span>
+              </a>
             <% }) %>
           </div>
         <% } %>
