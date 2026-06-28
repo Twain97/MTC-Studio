@@ -15,6 +15,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: 'Admin emails sent', value: (data) => data.deliveredCount, href: '/admin/messages?status=sent' }
   ]
 
+  async function readJsonResponse(response, fallbackMessage) {
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('application/json')) return response.json()
+
+    const body = await response.text()
+    const summary = body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140)
+    const status = [response.status, response.statusText].filter(Boolean).join(' ')
+    throw new Error(`${fallbackMessage} Server returned ${status || 'a non-JSON response'} instead of JSON.${summary ? ` Response started with: ${summary}` : ''}`)
+  }
+
   function setConstructionToggle(enabled) {
     if (!constructionToggle) return
     constructionToggle.checked = Boolean(enabled)
@@ -38,11 +48,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       const response = await apiFetch('/api/settings/construction-overlay', {
-        method: 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled })
       })
-      const data = await response.json()
+      const data = await readJsonResponse(response, 'Overlay setting could not be saved.')
       if (!response.ok) throw new Error(data.message || 'Overlay setting could not be saved.')
       setConstructionToggle(data.constructionOverlayEnabled)
     } catch (err) {
@@ -58,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const response = await apiFetch('/api/dashboard')
-    const data = await response.json()
+    const data = await readJsonResponse(response, 'Dashboard data could not be loaded.')
     if (!response.ok) throw new Error(data.message || 'Dashboard data could not be loaded.')
 
     metrics.innerHTML = metricCards.map((card) => `

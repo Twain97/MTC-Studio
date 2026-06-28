@@ -4,16 +4,7 @@ import { getSiteSettings, setConstructionOverlayEnabled } from '../lib/siteSetti
 
 const router = Router()
 
-router.get('/', requireAdmin, async (_req, res, next) => {
-  try {
-    const settings = await getSiteSettings()
-    res.json({ constructionOverlayEnabled: settings.constructionOverlayEnabled })
-  } catch (error) {
-    next(error)
-  }
-})
-
-router.patch('/construction-overlay', requireAdmin, async (req, res, next) => {
+async function updateConstructionOverlay(req, res, next) {
   try {
     if (typeof req.body.enabled !== 'boolean') {
       return res.status(400).json({ message: 'Overlay enabled state must be true or false.' })
@@ -24,6 +15,18 @@ router.patch('/construction-overlay', requireAdmin, async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+router.get('/', requireAdmin, async (_req, res, next) => {
+  try {
+    const settings = await getSiteSettings()
+    res.json({ constructionOverlayEnabled: settings.constructionOverlayEnabled })
+  } catch (error) {
+    next(error)
+  }
 })
+
+router.post('/construction-overlay', requireAdmin, updateConstructionOverlay)
+router.patch('/construction-overlay', requireAdmin, updateConstructionOverlay)
 
 export default router
