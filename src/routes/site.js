@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { getPortfolioProject, getPortfolioProjects } from '../lib/projects.js'
+import { getSiteSettings } from '../lib/siteSettings.js'
 import { env } from '../config/env.js'
 
 const router = Router()
@@ -72,13 +73,17 @@ const values = [
 
 router.get('/', async (_req, res, next) => {
   try {
-    const projects = await getPortfolioProjects({ limit: 4 })
+    const [projects, settings] = await Promise.all([
+      getPortfolioProjects({ limit: 4 }),
+      getSiteSettings()
+    ])
     res.render('pages/home', {
       title: 'MTC Studio',
       page: 'home',
       projects,
       services,
       pricing,
+      constructionOverlayEnabled: settings.constructionOverlayEnabled,
       seo: pageSeo({
         title: 'MTC Studio | Wedding and Portrait Photography in Lagos',
         path: '/',

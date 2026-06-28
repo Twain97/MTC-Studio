@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.js'
 import projectRoutes from './routes/projects.js'
 import messageRoutes from './routes/messages.js'
 import dashboardRoutes from './routes/dashboard.js'
+import settingsRoutes from './routes/settings.js'
 import { errorHandler, notFound } from './middleware/error.js'
 import { uploadRoot } from './middleware/upload.js'
 
@@ -58,6 +59,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/projects', projectRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/dashboard', dashboardRoutes)
+app.use('/api/settings', settingsRoutes)
 
 app.use(notFound)
 app.use(errorHandler)
