@@ -1,11 +1,12 @@
 {
   "name": "mtc-studio-api",
   "version": "1.0.0",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n css,app -c cyan,yellow \"npm run dev:css\" \"node --watch src/server.js\"",
     "dev:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/app.css --watch",
-    "start": "node src/server.js",
+    "start": "node server.js",
     "build": "npm run build:css",
     "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./public/css/app.css --minify",
     "check": "node --check src/server.js"
