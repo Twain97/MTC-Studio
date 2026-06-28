@@ -72,7 +72,7 @@ const values = [
 
 router.get('/', async (_req, res, next) => {
   try {
-    const projects = await getPortfolioProjects({ limit: 3 })
+    const projects = await getPortfolioProjects({ limit: 4 })
     res.render('pages/home', {
       title: 'MTC Studio',
       page: 'home',

@@ -1424,6 +1424,18 @@ button:disabled{
   width: 100%;
 }
 
+.w-1\/2{
+  width: 50%;
+}
+
+.w-16{
+  width: 4rem;
+}
+
+.w-3\/4{
+  width: 75%;
+}
+
 .min-w-0{
   min-width: 0px;
 }
@@ -2685,6 +2697,16 @@ button:disabled{
   .md\:py-32{
     padding-top: 8rem;
     padding-bottom: 8rem;
+  }
+
+  .md\:py-4{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .md\:py-16{
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .md\:text-4xl{

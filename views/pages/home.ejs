@@ -65,14 +65,13 @@
     <div class="site-container">
       <div data-reveal class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
         <div>
-          <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Selected work</p>
-          <h2 class="section-title mt-4">Recent stories</h2>
+          <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Contracts Done</p>
+          <h2 class="section-title mt-4">Recent Contracts</h2>
         </div>
-        <a href="/portfolio" class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.18em] text-dawn-900">Explore all work</a>
       </div>
       <div class="mt-12 grid gap-7 md:grid-cols-2">
         <% projects.forEach((project, index) => { %>
-          <article data-reveal="<%= index * 80 %>" class="portfolio-card group rounded-md">
+          <article data-reveal="<%= index * 80 %>" class="portfolio-card group rounded-md <%= index >= 3 ? 'hidden lg:block' : '' %>">
             <div class="relative overflow-hidden">
               <img src="<%= project.thumbnail %>" alt="<%= project.eventName %> photography in <%= project.location %> by MTC Studio" class="h-80 w-full object-cover transition duration-700 group-hover:scale-105 md:h-96" loading="lazy" decoding="async" data-fallback-src="/images/photographer.webp" />
               <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent"></div>
@@ -87,6 +86,9 @@
             </div>
           </article>
         <% }) %>
+      </div>
+      <div data-reveal class="mt-10 flex justify-center">
+        <a href="/portfolio" class="btn-dark w-3/4 rounded-md">View All Jobs Done.</a>
       </div>
     </div>
   </section>
