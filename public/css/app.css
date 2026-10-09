@@ -1340,16 +1340,16 @@ button:disabled{
   height: 1.25rem;
 }
 
-.h-56{
-  height: 14rem;
-}
-
 .h-6{
   height: 1.5rem;
 }
 
 .h-7{
   height: 1.75rem;
+}
+
+.h-80{
+  height: 20rem;
 }
 
 .h-\[470px\]{
@@ -1366,6 +1366,10 @@ button:disabled{
 
 .h-px{
   height: 1px;
+}
+
+.h-56{
+  height: 14rem;
 }
 
 .max-h-\[85vh\]{
@@ -1459,6 +1463,10 @@ button:disabled{
 
 .min-w-0{
   min-width: 0px;
+}
+
+.min-w-20{
+  min-width: 5rem;
 }
 
 .max-w-2xl{
@@ -1638,17 +1646,16 @@ button:disabled{
   gap: 1.5rem;
 }
 
+.gap-7{
+  gap: 1.75rem;
+}
+
 .gap-8{
   gap: 2rem;
 }
 
 .gap-px{
   gap: 1px;
-}
-
-.gap-x-2{
-  -moz-column-gap: 0.5rem;
-       column-gap: 0.5rem;
 }
 
 .gap-x-3{
@@ -1663,6 +1670,11 @@ button:disabled{
 
 .gap-y-1{
   row-gap: 0.25rem;
+}
+
+.gap-x-2{
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem;
 }
 
 .overflow-hidden{
@@ -2023,6 +2035,11 @@ button:disabled{
   padding-bottom: 5rem;
 }
 
+.py-24{
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
 .py-3{
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -2051,12 +2068,16 @@ button:disabled{
   padding-top: 0.25rem;
 }
 
-.pt-3{
-  padding-top: 0.75rem;
+.pt-4{
+  padding-top: 1rem;
 }
 
 .pt-8{
   padding-top: 2rem;
+}
+
+.pt-3{
+  padding-top: 0.75rem;
 }
 
 .text-left{
@@ -2116,18 +2137,9 @@ button:disabled{
   font-size: 16px;
 }
 
-.text-\[9px\]{
-  font-size: 9px;
-}
-
 .text-base{
   font-size: 1rem;
   line-height: 1.5rem;
-}
-
-.text-lg{
-  font-size: 1.125rem;
-  line-height: 1.75rem;
 }
 
 .text-sm{
@@ -2143,6 +2155,15 @@ button:disabled{
 .text-xs{
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[9px\]{
+  font-size: 9px;
+}
+
+.text-lg{
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .font-bold{
@@ -2193,10 +2214,6 @@ button:disabled{
   line-height: 1.25;
 }
 
-.tracking-\[\.08em\]{
-  letter-spacing: .08em;
-}
-
 .tracking-\[\.12em\]{
   letter-spacing: .12em;
 }
@@ -2235,6 +2252,10 @@ button:disabled{
 
 .tracking-wider{
   letter-spacing: 0.05em;
+}
+
+.tracking-\[\.08em\]{
+  letter-spacing: .08em;
 }
 
 .text-dawn-100{
@@ -2350,6 +2371,14 @@ button:disabled{
 
 .opacity-75{
   opacity: 0.75;
+}
+
+.opacity-25{
+  opacity: 0.25;
+}
+
+.opacity-90{
+  opacity: 0.9;
 }
 
 .shadow-2xl{
@@ -2825,6 +2854,10 @@ button:disabled{
   --tw-ring-color: rgb(217 170 77 / var(--tw-ring-opacity, 1));
 }
 
+.disabled\:cursor-wait:disabled{
+  cursor: wait;
+}
+
 .group:hover .group-hover\:translate-y-0{
   --tw-translate-y: 0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -2982,6 +3015,10 @@ button:disabled{
     height: 24rem;
   }
 
+  .md\:grid-cols-2{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .md\:grid-cols-3{
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -2990,12 +3027,12 @@ button:disabled{
     grid-template-columns: 1.2fr .8fr .8fr;
   }
 
-  .md\:gap-3{
-    gap: 0.75rem;
-  }
-
   .md\:gap-7{
     gap: 1.75rem;
+  }
+
+  .md\:gap-3{
+    gap: 0.75rem;
   }
 
   .md\:p-10{
@@ -3004,6 +3041,16 @@ button:disabled{
 
   .md\:p-5{
     padding: 1.25rem;
+  }
+
+  .md\:py-32{
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
+  .md\:py-\[5\.6rem\]{
+    padding-top: 5.6rem;
+    padding-bottom: 5.6rem;
   }
 
   .md\:py-\[2\.8rem\]{
@@ -3015,14 +3062,14 @@ button:disabled{
     padding-top: 1rem;
   }
 
-  .md\:text-2xl{
-    font-size: 1.5rem;
-    line-height: 2rem;
-  }
-
   .md\:text-4xl{
     font-size: 2.25rem;
     line-height: 2.5rem;
+  }
+
+  .md\:text-7xl{
+    font-size: 4.5rem;
+    line-height: 1;
   }
 
   .md\:text-6xl{
@@ -3030,9 +3077,9 @@ button:disabled{
     line-height: 1;
   }
 
-  .md\:text-7xl{
-    font-size: 4.5rem;
-    line-height: 1;
+  .md\:text-2xl{
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   .md\:text-xs{

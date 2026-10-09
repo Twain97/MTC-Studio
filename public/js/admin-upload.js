@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <p class="mt-2 truncate text-xs text-dawn-500">${escapeHtml(project.location)}</p>
           <p class="mt-1 text-xs text-dawn-400">${new Date(project.eventDate).toLocaleDateString('en', { month: 'long', year: 'numeric' })}</p>
         </div>
-        <button class="rounded-full p-2 text-red-600 transition hover:bg-red-50" data-delete-project="${project._id}" aria-label="Delete project">Delete</button>
+        <button type="button" class="inline-flex min-w-20 items-center justify-center gap-2 rounded-full p-2 text-red-600 transition hover:bg-red-50 disabled:cursor-wait" data-delete-project="${project._id}" aria-label="Delete project"><span data-delete-label>Delete</span></button>
       </article>
     `).join('')
 
@@ -157,11 +157,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       button.addEventListener('click', async () => {
         const id = button.getAttribute('data-delete-project')
         if (!confirm('Delete this project? This also deletes its uploaded images.')) return
-        const response = await apiFetch(`/api/projects/${id}`, { method: 'DELETE' })
-        const data = await response.json()
-        if (!response.ok) return setNotice('error', data.message || 'Project deletion failed.')
-        setNotice('success', data.message)
-        await loadProjects()
+        const label = button.querySelector('[data-delete-label]')
+        button.disabled = true
+        button.setAttribute('aria-busy', 'true')
+        button.setAttribute('aria-label', 'Deleting project')
+        label.innerHTML = '<svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3"></circle><path class="opacity-90" fill="currentColor" d="M12 3a9 9 0 0 1 9 9h-3a6 6 0 0 0-6-6V3Z"></path></svg><span>Deleting…</span>'
+
+        let deleteCompleted = false
+        try {
+          const response = await apiFetch(`/api/projects/${id}`, { method: 'DELETE' })
+          const data = await response.json()
+          if (!response.ok) throw new Error(data.message || 'Project deletion failed.')
+          deleteCompleted = true
+          setNotice('success', data.message)
+          button.closest('article')?.remove()
+          await loadProjects()
+        } catch (error) {
+          if (!deleteCompleted && button.isConnected) {
+            label.textContent = 'Delete'
+            button.disabled = false
+            button.removeAttribute('aria-busy')
+            button.setAttribute('aria-label', 'Delete project')
+          }
+          setNotice('error', deleteCompleted
+            ? `Project deleted, but the list could not refresh: ${error.message}`
+            : error.message || 'Project deletion failed.')
+        }
       })
     })
 
