@@ -35,7 +35,7 @@
     </div>
   </section>
 </main>
-<div class="fixed inset-0 z-[60] hidden items-center justify-center bg-dawn-950/90 p-4 backdrop-blur" data-lightbox>
+<div class="fixed inset-0 z-[60] hidden items-center justify-center bg-dawn-950/90 p-4 opacity-0 backdrop-blur transition-opacity duration-500" data-lightbox>
   <button type="button" class="absolute inset-0 z-0 cursor-zoom-out" aria-label="Close image viewer" data-lightbox-close></button>
   <figure class="relative z-10 grid w-full max-w-6xl gap-4">
     <button type="button" class="absolute right-3 top-3 z-20 grid h-10 w-10 place-items-center rounded-full bg-dawn-950/80 text-white shadow-lg transition hover:bg-gold-300 hover:text-dawn-950" aria-label="Close image viewer" data-lightbox-close>
@@ -43,7 +43,7 @@
         <path d="M6 6l12 12M18 6L6 18"></path>
       </svg>
     </button>
-    <img src="" alt="" class="max-h-[85vh] w-full rounded-sm object-contain shadow-2xl" data-lightbox-image />
+    <img src="" alt="" class="mx-auto block max-h-[85vh] max-w-full rounded-sm object-contain shadow-2xl transition-transform duration-700 ease-out" data-lightbox-image />
     <figcaption class="text-center text-sm text-dawn-100" data-lightbox-caption></figcaption>
   </figure>
 </div>

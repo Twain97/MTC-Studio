@@ -35,7 +35,30 @@ function initReveal() {
   })
 }
 
+function initPortfolioOpenAnimation() {
+  document.querySelectorAll('[data-portfolio-grid], [data-project-grid]').forEach((grid) => {
+    let opening = false
+    grid.addEventListener('click', (event) => {
+      const link = event.target.closest('[data-project-link]')
+      if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+      event.preventDefault()
+      if (opening) return
+      opening = true
+
+      const card = link.closest('.portfolio-card')
+      grid.classList.add('has-opening')
+      card?.classList.add('is-opening')
+      link.setAttribute('aria-busy', 'true')
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.setTimeout(() => window.location.assign(link.href), reducedMotion ? 0 : 1250)
+    })
+  })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav()
   initReveal()
+  initPortfolioOpenAnimation()
 })

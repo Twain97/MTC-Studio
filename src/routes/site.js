@@ -111,7 +111,7 @@ router.get('/about', (_req, res) => {
 
 router.get('/portfolio', async (_req, res, next) => {
   try {
-    const projects = await getPortfolioProjects({ limit: 3 })
+    const projects = await getPortfolioProjects()
     res.render('pages/portfolio', {
       title: 'Portfolio',
       page: 'portfolio',
