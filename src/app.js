@@ -12,6 +12,7 @@ import dashboardRoutes from './routes/dashboard.js'
 import settingsRoutes from './routes/settings.js'
 import { errorHandler, notFound } from './middleware/error.js'
 import { uploadRoot } from './middleware/upload.js'
+import { serveProjectImage } from './lib/projectImageStorage.js'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -38,6 +39,7 @@ app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
 app.use(express.static(publicRoot, { maxAge: '7d', setHeaders: setPublicCacheHeaders }))
+app.get('/uploads/images/:id', serveProjectImage)
 app.use('/uploads', express.static(uploadRoot, { maxAge: '7d', immutable: true }))
 
 app.use((req, res, next) => {

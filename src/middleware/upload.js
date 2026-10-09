@@ -1,10 +1,18 @@
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import multer from 'multer'
 import { fileURLToPath } from 'node:url'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 export const uploadRoot = path.resolve(currentDir, '../../uploads')
+const imageTempRoot = path.join(os.tmpdir(), 'mtc-studio-image-uploads')
+fs.mkdirSync(imageTempRoot, { recursive: true })
+
+function filenameFor(file) {
+  const safeBase = path.parse(file.originalname).name.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 50)
+  return `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeBase}${path.extname(file.originalname).toLowerCase()}`
+}
 
 function storageFor(folder) {
   const destination = path.join(uploadRoot, folder)
@@ -12,15 +20,15 @@ function storageFor(folder) {
 
   return multer.diskStorage({
     destination: (_req, _file, callback) => callback(null, destination),
-    filename: (_req, file, callback) => {
-      const safeBase = path.parse(file.originalname).name.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 50)
-      callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeBase}${path.extname(file.originalname).toLowerCase()}`)
-    }
+    filename: (_req, file, callback) => callback(null, filenameFor(file))
   })
 }
 
 export const imageUpload = multer({
-  storage: storageFor('images'),
+  storage: multer.diskStorage({
+    destination: (_req, _file, callback) => callback(null, imageTempRoot),
+    filename: (_req, file, callback) => callback(null, filenameFor(file))
+  }),
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, callback) => {
     const allowed = ['image/jpeg', 'image/png', 'image/webp']

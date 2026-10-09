@@ -1,9 +1,9 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
+import { unlink } from 'node:fs/promises'
 import { Router } from 'express'
 import { Project } from '../models/Project.js'
 import { requireAdmin } from '../middleware/auth.js'
-import { imageUpload, publicUploadPath, uploadRoot } from '../middleware/upload.js'
+import { imageUpload } from '../middleware/upload.js'
+import { deleteProjectImage, storeProjectImage } from '../lib/projectImageStorage.js'
 
 const router = Router()
 const projectUploads = imageUpload.fields([
@@ -31,53 +31,46 @@ router.get('/:id', async (req, res, next) => {
 
 router.post(
   '/',
-  (req, res, next) => {
-    console.log('1. request received')
-
-    req.on('aborted', () => {
-      console.log('REQUEST ABORTED')
-    })
-
-    req.on('close', () => {
-      console.log('REQUEST CLOSED')
-    })
-
-    next()
-  },
   requireAdmin,
-  (req, res, next) => {
-    console.log('2. auth passed')
-    next()
-  },
   projectUploads,
-  (req, res, next) => {
-    console.log('3. multer passed')
-    next()
-  },
   async (req, res, next) => {
-    console.log('4. handler entered')
-    try {
     const thumbnail = req.files?.thumbnail?.[0]
     const images = req.files?.images || []
-    if (!thumbnail) return res.status(400).json({ message: 'A thumbnail image is required.' })
-    if (!req.body.eventName || !req.body.eventDate || !req.body.location) {
-      return res.status(400).json({ message: 'Event name, month, and location are required.' })
+    const temporaryFiles = [...(req.files?.thumbnail || []), ...images]
+    const storedPaths = []
+
+    try {
+      if (!thumbnail) return res.status(400).json({ message: 'A thumbnail image is required.' })
+      if (!req.body.eventName || !req.body.eventDate || !req.body.location) {
+        return res.status(400).json({ message: 'Event name, month, and location are required.' })
+      }
+
+      const thumbnailPath = await storeProjectImage(thumbnail)
+      storedPaths.push(thumbnailPath)
+      const imagePaths = []
+      for (const image of images) {
+        const imagePath = await storeProjectImage(image)
+        storedPaths.push(imagePath)
+        imagePaths.push(imagePath)
+      }
+
+      const project = await Project.create({
+        eventName: req.body.eventName,
+        eventDate: new Date(`${req.body.eventDate}-01T12:00:00.000Z`),
+        location: req.body.location,
+        description: req.body.description,
+        featured: req.body.featured === 'true',
+        thumbnail: thumbnailPath,
+        images: imagePaths
+      })
+
+      res.status(201).json({ message: 'Project uploaded.', project })
+    } catch (error) {
+      await Promise.allSettled(storedPaths.map(deleteProjectImage))
+      next(error)
+    } finally {
+      await Promise.allSettled(temporaryFiles.map((file) => unlink(file.path)))
     }
-
-    const project = await Project.create({
-      eventName: req.body.eventName,
-      eventDate: new Date(`${req.body.eventDate}-01T12:00:00.000Z`),
-      location: req.body.location,
-      description: req.body.description,
-      featured: req.body.featured === 'true',
-      thumbnail: publicUploadPath(thumbnail, 'images'),
-      images: images.map((file) => publicUploadPath(file, 'images'))
-    })
-
-    res.status(201).json({ message: 'Project uploaded.', project })
-  } catch (error) {
-    next(error)
-  }
   }
 )
 
@@ -105,10 +98,7 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
     const project = await Project.findByIdAndDelete(req.params.id)
     if (!project) return res.status(404).json({ message: 'Project not found.' })
 
-    await Promise.allSettled([project.thumbnail, ...project.images].map((file) => {
-      const relative = file.replace(/^\/uploads\//, '')
-      return fs.unlink(path.join(uploadRoot, relative))
-    }))
+    await Promise.allSettled([project.thumbnail, ...project.images].map(deleteProjectImage))
 
     res.json({ message: 'Project deleted.' })
   } catch (error) {
