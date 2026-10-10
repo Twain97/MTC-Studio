@@ -35,6 +35,34 @@ function initReveal() {
   })
 }
 
+function initContractCollages() {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reducedMotion) return
+
+  document.querySelectorAll('[data-contract-collage]').forEach((collage, collageIndex) => {
+    const photos = Array.from(collage.querySelectorAll('[data-collage-photo]'))
+    if (photos.length < 2) return
+
+    const frontOrder = photos.length >= 3 ? [1, 0, 2] : [1, 0]
+    let sequenceIndex = 0
+    window.setInterval(() => {
+      if (document.hidden) return
+      sequenceIndex = (sequenceIndex + 1) % frontOrder.length
+      const frontIndex = frontOrder[sequenceIndex]
+      const leftIndex = (frontIndex + photos.length - 1) % photos.length
+      const rightIndex = (frontIndex + 1) % photos.length
+
+      photos.forEach((photo, index) => {
+        photo.classList.remove('is-front', 'is-left', 'is-center', 'is-right')
+        if (index === frontIndex) photo.classList.add('is-front', 'is-center')
+        else if (index === leftIndex) photo.classList.add('is-left')
+        else if (photos.length > 2 && index === rightIndex) photo.classList.add('is-right')
+        else photo.classList.add('is-left')
+      })
+    }, 2600 + (collageIndex % 3) * 240)
+  })
+}
+
 function initPortfolioOpenAnimation() {
   document.querySelectorAll('[data-portfolio-grid], [data-project-grid]').forEach((grid) => {
     let opening = false
@@ -60,5 +88,6 @@ function initPortfolioOpenAnimation() {
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNav()
   initReveal()
+  initContractCollages()
   initPortfolioOpenAnimation()
 })

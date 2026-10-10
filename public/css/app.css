@@ -881,6 +881,83 @@ button:disabled{
   --tw-ring-color: rgb(217 170 77 / var(--tw-ring-opacity, 1));
 }
 
+.contract-project-card {
+  overflow: visible;
+}
+
+.contract-collage {
+  position: relative;
+  isolation: isolate;
+  height: clamp(12rem, 56vw, 18rem);
+  margin: .75rem .5rem 0;
+}
+
+.contract-collage-photo {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 44%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid white;
+  border-radius: .65rem;
+  background: #e5edf3;
+  box-shadow: 0 10px 24px rgba(23, 35, 44, .22);
+  opacity: .78;
+  filter: blur(2px);
+  transform: translate3d(0, -50%, 0) scale(.95);
+  transition: left 1.05s cubic-bezier(.22, 1, .36, 1), transform 1.05s cubic-bezier(.22, 1, .36, 1), filter 1.05s ease, opacity 1.05s ease, box-shadow .85s ease;
+}
+
+.contract-collage-photo.is-left {
+  left: 0;
+  z-index: 1;
+}
+
+.contract-collage-photo.is-center {
+  left: 28%;
+  z-index: 2;
+}
+
+.contract-collage-photo.is-right {
+  left: 56%;
+  z-index: 3;
+}
+
+.contract-collage[data-photo-count="2"] .contract-collage-photo.is-left {
+  left: 7%;
+}
+
+.contract-collage-photo.is-front {
+  --collage-front-lift: .95rem;
+  --collage-front-scale: 1.14;
+  z-index: 8 !important;
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, calc(-50% - var(--collage-front-lift)), 0) scale(var(--collage-front-scale));
+  box-shadow: 0 20px 38px rgba(23, 35, 44, .32);
+}
+
+.contract-collage-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.contract-collage-link {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  border-radius: 1rem;
+  outline: none;
+}
+
+.contract-collage-link:focus-visible {
+  box-shadow: 0 0 0 3px #d9aa4d;
+}
+
 .portfolio-card {
   transition: transform .3s ease, scale 1.2s cubic-bezier(.2,.75,.25,1), opacity 1.2s ease, box-shadow 1.2s ease;
 }
@@ -1069,6 +1146,10 @@ button:disabled{
   pointer-events: none;
 }
 
+.visible{
+  visibility: visible;
+}
+
 .fixed{
   position: fixed;
 }
@@ -1157,6 +1238,10 @@ button:disabled{
 
 .top-5{
   top: 1.25rem;
+}
+
+.isolate{
+  isolation: isolate;
 }
 
 .z-0{
@@ -1348,10 +1433,6 @@ button:disabled{
   height: 1.75rem;
 }
 
-.h-80{
-  height: 20rem;
-}
-
 .h-\[470px\]{
   height: 470px;
 }
@@ -1366,10 +1447,6 @@ button:disabled{
 
 .h-px{
   height: 1px;
-}
-
-.h-56{
-  height: 14rem;
 }
 
 .max-h-\[85vh\]{
@@ -1566,6 +1643,10 @@ button:disabled{
   grid-auto-rows: 9rem;
 }
 
+.grid-cols-1{
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
 .grid-cols-2{
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1658,6 +1739,11 @@ button:disabled{
   gap: 1px;
 }
 
+.gap-x-2{
+  -moz-column-gap: 0.5rem;
+       column-gap: 0.5rem;
+}
+
 .gap-x-3{
   -moz-column-gap: 0.75rem;
        column-gap: 0.75rem;
@@ -1670,11 +1756,6 @@ button:disabled{
 
 .gap-y-1{
   row-gap: 0.25rem;
-}
-
-.gap-x-2{
-  -moz-column-gap: 0.5rem;
-       column-gap: 0.5rem;
 }
 
 .overflow-hidden{
@@ -1881,12 +1962,6 @@ button:disabled{
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.from-dawn-950\/85{
-  --tw-gradient-from: rgb(23 35 44 / 0.85) var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(23 35 44 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
 .from-dawn-950\/90{
   --tw-gradient-from: rgb(23 35 44 / 0.9) var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(23 35 44 / 0) var(--tw-gradient-to-position);
@@ -2035,11 +2110,6 @@ button:disabled{
   padding-bottom: 5rem;
 }
 
-.py-24{
-  padding-top: 6rem;
-  padding-bottom: 6rem;
-}
-
 .py-3{
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -2068,16 +2138,12 @@ button:disabled{
   padding-top: 0.25rem;
 }
 
-.pt-4{
-  padding-top: 1rem;
+.pt-3{
+  padding-top: 0.75rem;
 }
 
 .pt-8{
   padding-top: 2rem;
-}
-
-.pt-3{
-  padding-top: 0.75rem;
 }
 
 .text-left{
@@ -2137,9 +2203,18 @@ button:disabled{
   font-size: 16px;
 }
 
+.text-\[9px\]{
+  font-size: 9px;
+}
+
 .text-base{
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+.text-lg{
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 
 .text-sm{
@@ -2155,15 +2230,6 @@ button:disabled{
 .text-xs{
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-\[9px\]{
-  font-size: 9px;
-}
-
-.text-lg{
-  font-size: 1.125rem;
-  line-height: 1.75rem;
 }
 
 .font-bold{
@@ -2214,6 +2280,10 @@ button:disabled{
   line-height: 1.25;
 }
 
+.tracking-\[\.08em\]{
+  letter-spacing: .08em;
+}
+
 .tracking-\[\.12em\]{
   letter-spacing: .12em;
 }
@@ -2252,10 +2322,6 @@ button:disabled{
 
 .tracking-wider{
   letter-spacing: 0.05em;
-}
-
-.tracking-\[\.08em\]{
-  letter-spacing: .08em;
 }
 
 .text-dawn-100{
@@ -2365,16 +2431,16 @@ button:disabled{
   opacity: 0;
 }
 
+.opacity-25{
+  opacity: 0.25;
+}
+
 .opacity-65{
   opacity: 0.65;
 }
 
 .opacity-75{
   opacity: 0.75;
-}
-
-.opacity-25{
-  opacity: 0.25;
 }
 
 .opacity-90{
@@ -2761,6 +2827,21 @@ button:disabled{
   .construction-cog {
     animation: none;
   }
+
+  .contract-collage-photo {
+    transition: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .contract-project-card {
+    margin-bottom: .5rem;
+  }
+
+  .contract-collage-photo.is-front {
+    --collage-front-lift: 1.15rem;
+    --collage-front-scale: 1.22;
+  }
 }
 
 .placeholder\:text-dawn-400::-moz-placeholder{
@@ -2995,10 +3076,6 @@ button:disabled{
     right: 3rem;
   }
 
-  .md\:mt-0{
-    margin-top: 0px;
-  }
-
   .md\:mt-4{
     margin-top: 1rem;
   }
@@ -3009,10 +3086,6 @@ button:disabled{
 
   .md\:hidden{
     display: none;
-  }
-
-  .md\:h-96{
-    height: 24rem;
   }
 
   .md\:grid-cols-2{
@@ -3027,10 +3100,6 @@ button:disabled{
     grid-template-columns: 1.2fr .8fr .8fr;
   }
 
-  .md\:gap-7{
-    gap: 1.75rem;
-  }
-
   .md\:gap-3{
     gap: 0.75rem;
   }
@@ -3043,16 +3112,6 @@ button:disabled{
     padding: 1.25rem;
   }
 
-  .md\:py-32{
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-  }
-
-  .md\:py-\[5\.6rem\]{
-    padding-top: 5.6rem;
-    padding-bottom: 5.6rem;
-  }
-
   .md\:py-\[2\.8rem\]{
     padding-top: 2.8rem;
     padding-bottom: 2.8rem;
@@ -3062,14 +3121,14 @@ button:disabled{
     padding-top: 1rem;
   }
 
+  .md\:text-2xl{
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
   .md\:text-4xl{
     font-size: 2.25rem;
     line-height: 2.5rem;
-  }
-
-  .md\:text-7xl{
-    font-size: 4.5rem;
-    line-height: 1;
   }
 
   .md\:text-6xl{
@@ -3077,9 +3136,9 @@ button:disabled{
     line-height: 1;
   }
 
-  .md\:text-2xl{
-    font-size: 1.5rem;
-    line-height: 2rem;
+  .md\:text-7xl{
+    font-size: 4.5rem;
+    line-height: 1;
   }
 
   .md\:text-xs{

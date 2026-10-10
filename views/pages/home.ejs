@@ -43,6 +43,44 @@
     </div>
   </section>
 
+  <section class="portfolio section-pad bg-dawn-100">
+    <div class="site-container">
+      <div data-reveal class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Contracts Done</p>
+          <h2 class="section-title mt-4">Recent Contracts</h2>
+        </div>
+      </div>
+      <div data-project-grid class="mt-12 grid grid-cols-1 items-start gap-7 md:grid-cols-2">
+        <% projects.forEach((project, index) => { %>
+          <% const collageImages = [project.thumbnail, ...(project.images || [])].slice(0, 3); %>
+          <article data-reveal="<%= index * 80 %>" class="portfolio-card contract-project-card group rounded-md <%= index >= 3 ? 'hidden lg:block' : '' %>">
+            <div class="contract-collage" data-contract-collage data-photo-count="<%= collageImages.length %>">
+              <% collageImages.forEach((image, imageIndex) => { %>
+                <% const initialPosition = collageImages.length === 1 ? 'is-center is-front' : imageIndex === 1 ? 'is-center is-front' : imageIndex === 0 ? 'is-left' : 'is-right'; %>
+                <div class="contract-collage-photo <%= initialPosition %>" data-collage-photo>
+                  <img src="<%= image %>" alt="<%= project.eventName %> photograph <%= imageIndex + 1 %>" loading="lazy" decoding="async" data-fallback-src="/images/photographer.webp" />
+                </div>
+              <% }) %>
+              <a href="/portfolio/<%= project._id %>" data-project-link class="contract-collage-link" aria-label="View <%= project.eventName %> project"></a>
+            </div>
+            <div class="p-3 md:p-5">
+              <h2 class="font-display text-lg font-semibold text-dawn-950 md:text-2xl"><%= project.eventName %></h2>
+              <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-dawn-200 pt-3 text-[9px] font-semibold uppercase tracking-[.08em] text-dawn-600 md:mt-4 md:gap-3 md:pt-4 md:text-xs md:tracking-[.12em]">
+                <span><%= new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(new Date(project.eventDate)) %></span>
+                <span class="text-right"><%= project.location %></span>
+              </div>
+              <a href="/portfolio/<%= project._id %>" data-project-link class="mt-4 inline-flex text-xs font-bold uppercase tracking-[.14em] text-gold-700 transition hover:text-dawn-950">View Event <span class="ml-2" aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+      <div data-reveal class="mt-10 flex justify-center">
+        <a href="/portfolio" class="btn-dark w-3/4 rounded-md">View All Jobs Done.</a>
+      </div>
+    </div>
+  </section>
+
   <section class="about section-pad overflow-hidden bg-dawn-900">
     <div class="site-container grid items-center gap-12 lg:grid-cols-2">
       <div data-reveal class="relative">
@@ -75,38 +113,6 @@
             <p class="mt-4 text-sm leading-7 text-dawn-200"><%= service.text %></p>
           </article>
         <% }) %>
-      </div>
-    </div>
-  </section>
-
-  <section class="portfolio section-pad bg-dawn-100">
-    <div class="site-container">
-      <div data-reveal class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
-        <div>
-          <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Contracts Done</p>
-          <h2 class="section-title mt-4">Recent Contracts</h2>
-        </div>
-      </div>
-      <div data-project-grid class="mt-12 grid grid-cols-2 items-start gap-4 md:gap-7">
-        <% projects.forEach((project, index) => { %>
-          <article data-reveal="<%= index * 80 %>" class="portfolio-card group rounded-md <%= index % 2 === 0 ? 'mt-8 md:mt-0' : '' %> <%= index >= 3 ? 'hidden lg:block' : '' %>">
-            <div class="relative overflow-hidden">
-              <img src="<%= project.thumbnail %>" alt="<%= project.eventName %> photography in <%= project.location %> by MTC Studio" class="h-56 w-full object-cover transition duration-700 md:h-96" loading="lazy" decoding="async" data-fallback-src="/images/photographer.webp" />
-              <div class="absolute inset-0 bg-gradient-to-t from-dawn-950/85 via-transparent to-transparent"></div>
-              <a href="/portfolio/<%= project._id %>" data-project-link class="event-button">View event</a>
-            </div>
-            <div class="p-3 md:p-5">
-              <h2 class="font-display text-lg font-semibold text-dawn-950 md:text-2xl"><%= project.eventName %></h2>
-              <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-dawn-200 pt-3 text-[9px] font-semibold uppercase tracking-[.08em] text-dawn-600 md:mt-4 md:gap-3 md:pt-4 md:text-xs md:tracking-[.12em]">
-                <span><%= new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(new Date(project.eventDate)) %></span>
-                <span class="text-right"><%= project.location %></span>
-              </div>
-            </div>
-          </article>
-        <% }) %>
-      </div>
-      <div data-reveal class="mt-10 flex justify-center">
-        <a href="/portfolio" class="btn-dark w-3/4 rounded-md">View All Jobs Done.</a>
       </div>
     </div>
   </section>
