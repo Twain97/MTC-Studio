@@ -54,7 +54,7 @@
       <div data-project-grid class="mt-12 grid grid-cols-1 items-start gap-7 md:grid-cols-2">
         <% projects.forEach((project, index) => { %>
           <% const collageImages = [{ original: project.thumbnail, variants: project.thumbnailVariants }, ...(project.images || []).map((original, imageIndex) => ({ original, variants: project.imageVariants?.[imageIndex] }))].slice(0, 3); %>
-          <article data-reveal="<%= index * 80 %>" class="portfolio-card contract-project-card group rounded-md <%= index >= 3 ? 'hidden lg:block' : '' %>">
+          <article data-reveal="<%= index * 80 %>" class="portfolio-card contract-project-card group rounded-md <%= index >= 4 ? 'hidden' : index >= 2 ? 'hidden sm:block' : '' %>">
             <div class="contract-collage" data-contract-collage data-photo-count="<%= collageImages.length %>">
               <% collageImages.forEach((image, imageIndex) => { %>
                 <% const initialPosition = collageImages.length === 1 ? 'is-center is-front' : imageIndex === 1 ? 'is-center is-front' : imageIndex === 0 ? 'is-left' : 'is-right'; %>
@@ -120,7 +120,7 @@
   <section class="pricing section-pad bg-white">
     <div class="site-container">
       <div data-reveal class="mx-auto max-w-2xl text-center">
-        <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Starting investment</p>
+        <p class="eyebrow rounded-md bg-dawn-200 px-4 py-2 text-gold-700">Service Packages</p>
         <h2 class="section-title mt-4">Choose the right experience.</h2>
         <p class="mt-5 text-dawn-600">Each collection can be tailored to your date, location, and creative needs.</p>
       </div>
