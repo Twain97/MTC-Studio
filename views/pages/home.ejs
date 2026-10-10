@@ -53,13 +53,13 @@
       </div>
       <div data-project-grid class="mt-12 grid grid-cols-1 items-start gap-7 md:grid-cols-2">
         <% projects.forEach((project, index) => { %>
-          <% const collageImages = [project.thumbnail, ...(project.images || [])].slice(0, 3); %>
+          <% const collageImages = [{ original: project.thumbnail, variants: project.thumbnailVariants }, ...(project.images || []).map((original, imageIndex) => ({ original, variants: project.imageVariants?.[imageIndex] }))].slice(0, 3); %>
           <article data-reveal="<%= index * 80 %>" class="portfolio-card contract-project-card group rounded-md <%= index >= 3 ? 'hidden lg:block' : '' %>">
             <div class="contract-collage" data-contract-collage data-photo-count="<%= collageImages.length %>">
               <% collageImages.forEach((image, imageIndex) => { %>
                 <% const initialPosition = collageImages.length === 1 ? 'is-center is-front' : imageIndex === 1 ? 'is-center is-front' : imageIndex === 0 ? 'is-left' : 'is-right'; %>
                 <div class="contract-collage-photo <%= initialPosition %>" data-collage-photo>
-                  <img src="<%= image %>" alt="<%= project.eventName %> photograph <%= imageIndex + 1 %>" loading="lazy" decoding="async" data-fallback-src="/images/photographer.webp" />
+                  <img src="<%= image.variants?.small || image.original %>" srcset="<% if (image.variants?.small) { %><%= image.variants.small %> <%= image.variants.smallWidth %>w<% } %><% if (image.variants?.large) { %><% if (image.variants?.small) { %>, <% } %><%= image.variants.large %> <%= image.variants.largeWidth %>w<% } %>" sizes="(max-width: 639px) 40vw, (max-width: 1023px) 30vw, 20vw" alt="<%= project.eventName %> photograph <%= imageIndex + 1 %>" loading="lazy" decoding="async" data-fallback-src="/images/photographer.webp" />
                 </div>
               <% }) %>
               <a href="/portfolio/<%= project._id %>" data-project-link class="contract-collage-link" aria-label="View <%= project.eventName %> project"></a>

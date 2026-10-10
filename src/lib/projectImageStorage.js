@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises'
-import { createReadStream } from 'node:fs'
+import { createReadStream, createWriteStream } from 'node:fs'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 import mongoose from 'mongoose'
@@ -48,6 +48,23 @@ export async function deleteProjectImage(imagePath) {
   } catch (error) {
     if (error.code !== 'ENOENT') throw error
   }
+}
+
+export async function copyProjectImageToFile(imagePath, targetPath) {
+  const gridFsMatch = imagePathPattern.exec(String(imagePath))
+  if (gridFsMatch) {
+    const bucket = getBucket()
+    const id = new mongoose.Types.ObjectId(gridFsMatch[1])
+    const file = await bucket.find({ _id: id }).next()
+    if (!file) throw new Error(`Image not found: ${imagePath}`)
+    await pipeline(bucket.openDownloadStream(id), createWriteStream(targetPath))
+    return
+  }
+
+  const relativePath = String(imagePath).replace(/^\/uploads\//, '')
+  const sourcePath = path.resolve(uploadRoot, relativePath)
+  if (!sourcePath.startsWith(`${uploadRoot}${path.sep}`)) throw new Error(`Invalid image path: ${imagePath}`)
+  await pipeline(createReadStream(sourcePath), createWriteStream(targetPath))
 }
 
 export async function serveProjectImage(req, res, next) {

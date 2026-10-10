@@ -4,6 +4,7 @@ import { Project } from '../models/Project.js'
 import { requireAdmin } from '../middleware/auth.js'
 import { imageUpload } from '../middleware/upload.js'
 import { deleteProjectImage, storeProjectImage } from '../lib/projectImageStorage.js'
+import { createWebpVariants } from '../lib/imageVariants.js'
 
 const router = Router()
 const projectUploads = imageUpload.fields([
@@ -45,13 +46,37 @@ router.post(
         return res.status(400).json({ message: 'Event name, month, and location are required.' })
       }
 
+      const thumbnailVariants = await createWebpVariants(thumbnail, [480, 1280])
+      temporaryFiles.push(...thumbnailVariants)
       const thumbnailPath = await storeProjectImage(thumbnail)
       storedPaths.push(thumbnailPath)
+      const thumbnailVariantPaths = {}
+      for (const variant of thumbnailVariants) {
+        const variantPath = await storeProjectImage(variant)
+        storedPaths.push(variantPath)
+        const key = variant.width <= 480 ? 'small' : 'large'
+        thumbnailVariantPaths[key] = variantPath
+        thumbnailVariantPaths[`${key}Width`] = variant.width
+      }
+
       const imagePaths = []
+      const imageVariantPaths = []
       for (const image of images) {
+        const variants = await createWebpVariants(image, [640, 1600])
+        temporaryFiles.push(...variants)
         const imagePath = await storeProjectImage(image)
         storedPaths.push(imagePath)
         imagePaths.push(imagePath)
+
+        const paths = {}
+        for (const variant of variants) {
+          const variantPath = await storeProjectImage(variant)
+          storedPaths.push(variantPath)
+          const key = variant.width <= 640 ? 'small' : 'large'
+          paths[key] = variantPath
+          paths[`${key}Width`] = variant.width
+        }
+        imageVariantPaths.push(paths)
       }
 
       const project = await Project.create({
@@ -61,7 +86,9 @@ router.post(
         description: req.body.description,
         featured: req.body.featured === 'true',
         thumbnail: thumbnailPath,
-        images: imagePaths
+        thumbnailVariants: thumbnailVariantPaths,
+        images: imagePaths,
+        imageVariants: imageVariantPaths
       })
 
       res.status(201).json({ message: 'Project uploaded.', project })
@@ -98,7 +125,9 @@ router.delete('/:id', requireAdmin, async (req, res, next) => {
     const project = await Project.findByIdAndDelete(req.params.id)
     if (!project) return res.status(404).json({ message: 'Project not found.' })
 
-    await Promise.allSettled([project.thumbnail, ...project.images].map(deleteProjectImage))
+    const variantPaths = [project.thumbnailVariants?.small, project.thumbnailVariants?.large]
+    for (const variants of project.imageVariants || []) variantPaths.push(variants.small, variants.large)
+    await Promise.allSettled([project.thumbnail, ...project.images, ...variantPaths].filter(Boolean).map(deleteProjectImage))
 
     res.json({ message: 'Project deleted.' })
   } catch (error) {
