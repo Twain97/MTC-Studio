@@ -74,7 +74,7 @@ const values = [
 router.get('/', async (_req, res, next) => {
   try {
     const [projects, settings] = await Promise.all([
-      getPortfolioProjects({ limit: 4 }),
+      getPortfolioProjects({ limit: 4, oldestFirst: true }),
       getSiteSettings()
     ])
     res.render('pages/home', {
