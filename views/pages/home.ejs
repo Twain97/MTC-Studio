@@ -67,7 +67,7 @@
             <div class="p-3 md:p-5">
               <h2 class="font-display text-lg font-semibold text-dawn-950 md:text-2xl"><%= project.eventName %></h2>
               <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-dawn-200 pt-3 text-[9px] font-semibold uppercase tracking-[.08em] text-dawn-600 md:mt-4 md:gap-3 md:pt-4 md:text-xs md:tracking-[.12em]">
-                <span><%= new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(new Date(project.eventDate)) %></span>
+                <span class="hidden md:inline"><%= new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric' }).format(new Date(project.eventDate)) %></span>
                 <span class="text-right"><%= project.location %></span>
               </div>
               <a href="/portfolio/<%= project._id %>" data-project-link class="mt-4 inline-flex text-xs font-bold uppercase tracking-[.14em] text-gold-700 transition hover:text-dawn-950">View Event <span class="ml-2" aria-hidden="true">→</span></a>

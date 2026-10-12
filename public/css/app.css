@@ -3080,6 +3080,10 @@ button:disabled{
     margin-top: 1rem;
   }
 
+  .md\:inline{
+    display: inline;
+  }
+
   .md\:flex{
     display: flex;
   }
