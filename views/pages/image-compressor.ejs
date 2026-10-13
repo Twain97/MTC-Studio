@@ -1,0 +1,59 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main>
+  <section class="bg-dawn-900 py-16 text-white md:py-24">
+    <div class="site-container">
+      <p class="eyebrow text-gold-300">Free browser tool</p>
+      <h1 class="section-title mt-4 text-white">Image Compressor</h1>
+      <p class="mt-5 max-w-2xl text-sm leading-7 text-dawn-200 md:text-base">Resize image files into a format that suits your needs. Images are processed in your browser and are not uploaded.</p>
+    </div>
+  </section>
+
+  <section class="section-pad">
+    <div class="site-container mx-auto max-w-4xl">
+      <div class="grid gap-8 rounded-md border border-dawn-200 bg-white p-5 shadow-sm sm:p-8">
+        <label class="form-label">
+          Choose output format
+          <select class="form-input" data-compressor-format>
+            <option value="image/jpeg">JPG (JPEG)</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/png">PNG</option>
+          </select>
+        </label>
+        <div class="grid gap-3 text-xs leading-6 text-dawn-600 sm:grid-cols-3">
+          <p><strong class="text-dawn-900">PNG</strong><br />Lossless and supports transparency. Often larger for photos.</p>
+          <p><strong class="text-dawn-900">JPEG</strong><br />Good for photos and usually smaller. Does not support transparency.</p>
+          <p><strong class="text-dawn-900">WebP</strong><br />Usually compact and supports transparency. This tool uses lossy compression.</p>
+        </div>
+        <label class="grid gap-2 text-xs font-bold uppercase tracking-[.12em] text-dawn-700" data-quality-control>
+          Quality <span class="flex items-center gap-3"><input class="w-full accent-gold-500" type="range" min="0" max="100" value="82" data-compressor-quality /><output class="w-12 text-right text-sm" data-quality-value>82%</output></span>
+          <span class="flex justify-between text-[10px] font-semibold normal-case tracking-normal text-dawn-600"><span>0% · Low size, low quality</span><span>100% · High quality, larger size</span></span>
+          <span class="text-xs font-normal normal-case leading-5 tracking-normal text-dawn-500">Lower quality generally means smaller files. <span class="font-semibold text-red-600">PNG ignores this setting.</span></span>
+        </label>
+
+        <label class="upload-box rounded-md" data-drop-zone>
+          <input class="sr-only" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple data-compressor-files />
+          <strong>Drop images here or choose files</strong>
+          <span>JPG, PNG, and WebP. Up to 10 images at a time, 50 MB maximum per image.</span>
+        </label>
+        <p class="text-sm text-red-700" role="alert" aria-live="polite" data-compressor-error></p>
+        <div class="flex flex-wrap gap-3">
+          <button class="btn-dark rounded-md" type="button" data-compress disabled>Compress images</button>
+          <button class="btn-outline-dark rounded-md hidden" type="button" data-download-all>Download all</button>
+          <button class="btn-outline-dark rounded-md hidden" type="button" data-clear-images>Clear images</button>
+        </div>
+        <div class="hidden items-center gap-3 text-sm text-dawn-700" role="status" aria-live="polite" data-compress-progress>
+          <span class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-dawn-300 border-t-gold-500" aria-hidden="true"></span>
+          <span data-compress-progress-label>Preparing images…</span>
+        </div>
+        <div class="grid gap-4" aria-live="polite" data-compressor-results></div>
+        <p class="text-xs leading-5 text-dawn-500">Converting formats can change image data. PNG is lossless, but converting a JPEG to PNG cannot restore detail already lost in the JPEG.</p>
+        <p class="text-xs leading-5 text-dawn-500">Images stay in this browser tab. The queue and generated previews/download links clear when you leave or refresh, and each item expires 30 minutes after upload or compression. Files you have already downloaded are saved on your device and cannot be removed by this page.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/whatsapp', { whatsappNumber }) %>
+<script src="/js/image-compressor.js" defer></script>
+<%- include('../partials/site-scripts') %>

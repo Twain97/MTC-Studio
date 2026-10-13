@@ -13,6 +13,22 @@
   <div class="hidden" data-dashboard-content>
     <section class="mt-9 grid gap-5 sm:grid-cols-2 xl:grid-cols-4" data-dashboard-metrics></section>
     <section class="mt-8 border border-dawn-200 bg-white p-6">
+      <div>
+        <p class="eyebrow text-gold-700">Daily activity</p>
+        <h2 class="mt-2 font-display text-3xl">Visitors and image conversions</h2>
+        <p class="mt-2 text-xs leading-5 text-dawn-500">Visitors are unique browsers counted with a short lived anonymous cookie. Image totals count each successful conversion in the compressor.</p>
+      </div>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2" data-dashboard-daily-summary></div>
+      <div class="mt-6 overflow-x-auto">
+        <table class="w-full min-w-[28rem] text-left text-sm">
+          <thead class="border-b border-dawn-200 text-[10px] font-bold uppercase tracking-[.14em] text-dawn-500">
+            <tr><th class="py-3 pr-4">Date</th><th class="py-3 pr-4">Unique visitors</th><th class="py-3">Images converted</th></tr>
+          </thead>
+          <tbody data-dashboard-daily-rows></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="mt-8 border border-dawn-200 bg-white p-6">
       <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="eyebrow text-gold-700">Homepage notice</p>

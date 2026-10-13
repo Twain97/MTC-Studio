@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const error = document.querySelector('[data-dashboard-error]')
   const content = document.querySelector('[data-dashboard-content]')
   const metrics = document.querySelector('[data-dashboard-metrics]')
+  const dailySummary = document.querySelector('[data-dashboard-daily-summary]')
+  const dailyRows = document.querySelector('[data-dashboard-daily-rows]')
   const messages = document.querySelector('[data-dashboard-messages]')
   const constructionToggle = document.querySelector('[data-construction-toggle]')
   const constructionToggleLabel = document.querySelector('[data-construction-toggle-label]')
@@ -77,6 +79,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         <strong>${escapeHtml(card.value(data))}</strong>
         <span class="col-span-2 mt-4 text-xs font-bold uppercase tracking-[.14em] text-dawn-400 transition group-hover:text-gold-600">Open</span>
       </a>
+    `).join('')
+
+    const todayActivity = data.dailyActivity.find((day) => day.date === data.analyticsDate) || { visitorCount: 0, imageConversionCount: 0 }
+    dailySummary.innerHTML = `
+      <article class="border border-dawn-100 bg-dawn-50 p-5">
+        <p class="text-xs font-bold uppercase tracking-[.13em] text-dawn-500">Unique visitors today</p>
+        <strong class="mt-3 block font-display text-4xl font-semibold text-dawn-950">${todayActivity.visitorCount}</strong>
+      </article>
+      <article class="border border-dawn-100 bg-dawn-50 p-5">
+        <p class="text-xs font-bold uppercase tracking-[.13em] text-dawn-500">Images converted today</p>
+        <strong class="mt-3 block font-display text-4xl font-semibold text-dawn-950">${todayActivity.imageConversionCount}</strong>
+      </article>
+    `
+    dailyRows.innerHTML = data.dailyActivity.map((day) => `
+      <tr class="border-b border-dawn-100 last:border-0">
+        <td class="py-3 pr-4 font-medium text-dawn-800">${escapeHtml(day.date)}</td>
+        <td class="py-3 pr-4 text-dawn-600">${day.visitorCount}</td>
+        <td class="py-3 text-dawn-600">${day.imageConversionCount}</td>
+      </tr>
     `).join('')
 
     messages.innerHTML = data.recentMessages.length

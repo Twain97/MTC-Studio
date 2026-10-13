@@ -127,6 +127,18 @@ router.get('/portfolio', async (_req, res, next) => {
   }
 })
 
+router.get('/image-compressor', (_req, res) => {
+  res.render('pages/image-compressor', {
+    title: 'Image Compressor',
+    page: 'image-compressor',
+    seo: pageSeo({
+      title: 'Image Compressor | MTC Studio',
+      description: 'Compress images in your browser and convert them to PNG, JPEG, or WebP. Your files stay on your device.',
+      path: '/image-compressor'
+    })
+  })
+})
+
 router.get('/portfolio/:id', async (req, res, next) => {
   try {
     const project = await getPortfolioProject(req.params.id)
@@ -198,6 +210,7 @@ router.get('/sitemap.xml', async (_req, res, next) => {
       { loc: '/', priority: '1.0', changefreq: 'weekly' },
       { loc: '/about', priority: '0.7', changefreq: 'monthly' },
       { loc: '/portfolio', priority: '0.9', changefreq: 'weekly' },
+      { loc: '/image-compressor', priority: '0.6', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.8', changefreq: 'monthly' },
       ...projects.map((project) => ({
         loc: `/portfolio/${project._id}`,
