@@ -4,13 +4,18 @@ import { Message } from '../models/Message.js'
 import { requireAdmin } from '../middleware/auth.js'
 import { contractUpload, publicUploadPath } from '../middleware/upload.js'
 import { notifyAdmin, replyToClient } from '../services/mailService.js'
+import { sanitizeUserText } from '../lib/sanitizeUserInput.js'
 
 const router = Router()
 const contactLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, standardHeaders: true, legacyHeaders: false })
 
 router.post('/', contactLimiter, async (req, res, next) => {
   try {
-    const { name, email, phone, subject, message } = req.body
+    const name = sanitizeUserText(req.body.name)
+    const email = sanitizeUserText(req.body.email).toLowerCase()
+    const phone = sanitizeUserText(req.body.phone)
+    const subject = sanitizeUserText(req.body.subject)
+    const message = sanitizeUserText(req.body.message)
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ message: 'Name, email, subject, and message are required.' })
     }
@@ -79,14 +84,15 @@ router.post('/:id/reply', requireAdmin, contractUpload.single('contract'), async
   try {
     const message = await Message.findById(req.params.id)
     if (!message) return res.status(404).json({ message: 'Message not found.' })
-    if (!req.body.body?.trim()) return res.status(400).json({ message: 'A reply message is required.' })
+    const replyBody = sanitizeUserText(req.body.body)
+    if (!replyBody) return res.status(400).json({ message: 'A reply message is required.' })
 
-    await replyToClient(message, req.body.body.trim(), req.file, {
+    await replyToClient(message, replyBody, req.file, {
       name: req.admin?.name,
       email: req.admin?.email
     })
     message.replies.push({
-      body: req.body.body.trim(),
+      body: replyBody,
       contractPath: req.file ? publicUploadPath(req.file, 'contracts') : undefined,
       adminName: req.admin?.name,
       adminEmail: req.admin?.email

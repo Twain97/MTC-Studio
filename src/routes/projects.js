@@ -5,6 +5,7 @@ import { requireAdmin } from '../middleware/auth.js'
 import { imageUpload } from '../middleware/upload.js'
 import { deleteProjectImage, storeProjectImage } from '../lib/projectImageStorage.js'
 import { createWebpVariants } from '../lib/imageVariants.js'
+import { sanitizeUserText } from '../lib/sanitizeUserInput.js'
 
 const router = Router()
 const projectUploads = imageUpload.fields([
@@ -41,8 +42,12 @@ router.post(
     const storedPaths = []
 
     try {
+      const eventName = sanitizeUserText(req.body.eventName)
+      const eventDate = sanitizeUserText(req.body.eventDate)
+      const location = sanitizeUserText(req.body.location)
+      const description = sanitizeUserText(req.body.description)
       if (!thumbnail) return res.status(400).json({ message: 'A thumbnail image is required.' })
-      if (!req.body.eventName || !req.body.eventDate || !req.body.location) {
+      if (!eventName || !eventDate || !location) {
         return res.status(400).json({ message: 'Event name, month, and location are required.' })
       }
 
@@ -80,10 +85,10 @@ router.post(
       }
 
       const project = await Project.create({
-        eventName: req.body.eventName,
-        eventDate: new Date(`${req.body.eventDate}-01T12:00:00.000Z`),
-        location: req.body.location,
-        description: req.body.description,
+        eventName,
+        eventDate: new Date(`${eventDate}-01T12:00:00.000Z`),
+        location,
+        description,
         featured: req.body.featured === 'true',
         thumbnail: thumbnailPath,
         thumbnailVariants: thumbnailVariantPaths,
@@ -104,12 +109,12 @@ router.post(
 router.patch('/:id', requireAdmin, async (req, res, next) => {
   try {
     const update = {
-      eventName: req.body.eventName,
-      location: req.body.location,
-      description: req.body.description,
+      eventName: req.body.eventName === undefined ? undefined : sanitizeUserText(req.body.eventName),
+      location: req.body.location === undefined ? undefined : sanitizeUserText(req.body.location),
+      description: req.body.description === undefined ? undefined : sanitizeUserText(req.body.description),
       featured: req.body.featured
     }
-    if (req.body.eventDate) update.eventDate = new Date(`${req.body.eventDate}-01T12:00:00.000Z`)
+    if (req.body.eventDate) update.eventDate = new Date(`${sanitizeUserText(req.body.eventDate)}-01T12:00:00.000Z`)
     Object.keys(update).forEach((key) => update[key] === undefined && delete update[key])
 
     const project = await Project.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true })

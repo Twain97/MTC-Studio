@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 390" role="img" aria-labelledby="title desc">
+  <title id="title">Before and after background removal</title>
+  <desc id="desc">A portrait is shown against a soft outdoor scene on the left and isolated over a transparency checkerboard on the right. An animated divider reveals the change.</desc>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#dcebf0" />
+      <stop offset="1" stop-color="#f4e6c8" />
+    </linearGradient>
+    <linearGradient id="shirt" x2="0" y2="1">
+      <stop stop-color="#d9aa4d" />
+      <stop offset="1" stop-color="#b57935" />
+    </linearGradient>
+    <pattern id="checker" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#f7f9fa" />
+      <path d="M0 0h16v16H0zm16 16h16v16H16z" fill="#dce5e9" />
+    </pattern>
+    <clipPath id="panelClip"><rect x="0" y="0" width="1000" height="390" rx="14" /></clipPath>
+    <g id="person">
+      <path d="M448 205c-35 13-58 44-66 89l-17 82h270l-17-82c-8-45-31-76-66-89l-53 23z" fill="url(#shirt)" />
+      <path d="M456 244c19 15 37 22 56 22s38-7 57-22l23 132H433z" fill="#293946" />
+      <path d="M462 190v36c0 25 19 43 50 43s50-18 50-43v-36z" fill="#8d513c" />
+      <ellipse cx="512" cy="136" rx="62" ry="72" fill="#9e6148" />
+      <path d="M450 133c-5-55 21-91 69-91 41 0 65 27 63 72-17-4-30-18-35-35-21 19-55 29-97 30z" fill="#222b32" />
+      <path d="M453 133c-4 30-1 53 11 68l-18-12c-16-18-20-43-13-66zM571 133c4 30 1 53-11 68l18-12c16-18 20-43 13-66z" fill="#222b32" />
+      <path d="M468 143c8-5 17-5 25 0m38 0c8-5 17-5 25 0" fill="none" stroke="#402a26" stroke-width="5" stroke-linecap="round" />
+      <path d="M490 177c13 10 31 10 44 0" fill="none" stroke="#633c35" stroke-width="5" stroke-linecap="round" />
+      <path d="M408 260c-18 18-30 40-35 66l-5 26c-2 10 5 18 14 18 8 0 13-5 16-13l17-44m173-53c18 18 30 40 35 66l5 26c2 10-5 18-14 18-8 0-13-5-16-13l-17-44" fill="none" stroke="#9e6148" stroke-width="24" stroke-linecap="round" />
+    </g>
+    <style>
+      .after-reveal { clip-path: inset(0 0 0 50%); animation: reveal 5s ease-in-out infinite; }
+      .reveal-divider { animation: move-divider 5s ease-in-out infinite; }
+      @keyframes reveal { 0%, 100% { clip-path: inset(0 0 0 50%); } 50% { clip-path: inset(0 0 0 79%); } }
+      @keyframes move-divider { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(290px); } }
+      @media (prefers-reduced-motion: reduce) { .after-reveal, .reveal-divider { animation: none; } }
+    </style>
+  </defs>
+  <g clip-path="url(#panelClip)">
+    <rect width="1000" height="390" fill="url(#sky)" />
+    <circle cx="835" cy="86" r="43" fill="#f5cf78" opacity=".75" />
+    <path d="M0 244c112-60 207-44 303 4 92 46 168 45 260 7 110-45 260-38 437 30v105H0z" fill="#9eb89f" />
+    <path d="M0 293c147-54 251-16 361 19 116 37 247 8 353-23 102-30 197-22 286 13v87H0z" fill="#668874" />
+    <path d="M75 295v-96m-26 96c-3-43 15-65 27-75 21 17 31 42 27 75zm771 1V185m-34 110c-4-50 15-77 35-91 23 19 37 50 33 91z" fill="#587963" />
+    <use href="#person" />
+    <g class="after-reveal">
+      <rect width="1000" height="390" fill="url(#checker)" />
+      <use href="#person" />
+    </g>
+    <rect class="reveal-divider" x="498" y="0" width="4" height="390" fill="#fff" filter="drop-shadow(0 1px 4px #17232c88)" />
+    <rect x="28" y="24" width="124" height="34" rx="17" fill="#17232c" opacity=".8" />
+    <text x="90" y="46" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle">BEFORE</text>
+    <rect x="848" y="24" width="124" height="34" rx="17" fill="#17232c" opacity=".8" />
+    <text x="910" y="46" fill="#fff" font-family="Inter,Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="2" text-anchor="middle">AFTER</text>
+  </g>
+</svg>

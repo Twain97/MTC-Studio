@@ -139,6 +139,46 @@ router.get('/image-compressor', (_req, res) => {
   })
 })
 
+router.get('/image-converter', (_req, res) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+  res.render('pages/image-converter', {
+    title: 'Image Image Converter',
+    page: 'image-converter',
+    seo: pageSeo({
+      title: 'Image Converter | MTC Studio',
+      description: 'Convert common images and camera RAW photos to JPG, PNG, or WebP in your browser.',
+      path: '/image-converter'
+    })
+  })
+})
+
+router.get('/remove-background', (_req, res) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+  res.render('pages/remove-background', {
+    title: 'Remove Image Background',
+    page: 'remove-background',
+    seo: pageSeo({
+      title: 'Remove Image Background | MTC Studio',
+      description: 'Remove a photo background in your browser and download a transparent PNG. Your image stays on your device.',
+      path: '/remove-background'
+    })
+  })
+})
+
+router.get('/passport-ratio', (_req, res) => {
+  res.render('pages/passport-ratio', {
+    title: 'Passport Ratio',
+    page: 'passport-ratio',
+    seo: pageSeo({
+      title: 'Passport Ratio Cropper | MTC Studio',
+      description: 'Crop a single image to common passport photo aspect ratios in your browser.',
+      path: '/passport-ratio'
+    })
+  })
+})
+
 router.get('/portfolio/:id', async (req, res, next) => {
   try {
     const project = await getPortfolioProject(req.params.id)
@@ -211,6 +251,9 @@ router.get('/sitemap.xml', async (_req, res, next) => {
       { loc: '/about', priority: '0.7', changefreq: 'monthly' },
       { loc: '/portfolio', priority: '0.9', changefreq: 'weekly' },
       { loc: '/image-compressor', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/image-converter', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/remove-background', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/passport-ratio', priority: '0.6', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.8', changefreq: 'monthly' },
       ...projects.map((project) => ({
         loc: `/portfolio/${project._id}`,

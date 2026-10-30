@@ -1,38 +1,66 @@
+import { deleteToolSession, getToolSessions, putToolSession } from './tool-session-storage.js'
+
 (() => {
   const input = document.querySelector('[data-compressor-files]')
   if (!input) return
 
-  const format = document.querySelector('[data-compressor-format]')
   const quality = document.querySelector('[data-compressor-quality]')
   const qualityValue = document.querySelector('[data-quality-value]')
-  const qualityControl = document.querySelector('[data-quality-control]')
   const dropZone = document.querySelector('[data-drop-zone]')
   const compressButton = document.querySelector('[data-compress]')
   const downloadAllButton = document.querySelector('[data-download-all]')
   const clearImagesButton = document.querySelector('[data-clear-images]')
   const results = document.querySelector('[data-compressor-results]')
   const errorMessage = document.querySelector('[data-compressor-error]')
+  const warning = document.querySelector('[data-compressor-warning]')
+  const warningMessage = document.querySelector('[data-compressor-warning-message]')
+  const closeWarningButton = document.querySelector('[data-close-compressor-warning]')
+  const toast = document.querySelector('[data-compressor-toast]')
   const progress = document.querySelector('[data-compress-progress]')
   const progressLabel = document.querySelector('[data-compress-progress-label]')
   const items = []
   const maxFiles = 10
-  const maxFileBytes = 50 * 1024 * 1024
+  const maxFileBytes = 20 * 1024 * 1024
   const itemLifetimeMs = 30 * 60 * 1000
   let isCompressing = false
+  let toastTimer
 
   const extensionFor = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }
   const formatLabel = { 'image/png': 'PNG', 'image/jpeg': 'JPG (JPEG)', 'image/webp': 'WebP' }
+  const mimeForExtension = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }
+  const rawExtensions = /\.(raw|cr2|cr3|nef|nrw|arw|srf|sr2|dng|raf|orf|rw2|pef|ptx|srw|3fr|fff|iiq|kdc|dcr|mos|mrw|x3f|rwl|cap|eip)$/i
   const bytesLabel = (bytes) => {
     if (bytes < 1024) return `${bytes} B`
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
   }
 
-  function updateFormatControls() {
-    qualityControl.classList.toggle('hidden', format.value === 'image/png')
+  function inputMime(file) {
+    if (extensionFor[file.type]) return file.type
+    const extension = file.name.split('.').pop().toLowerCase()
+    return mimeForExtension[extension]
   }
 
-  function makeCard(file) {
+  function showWarning(message) {
+    warningMessage.textContent = message
+    warning.classList.remove('hidden')
+    warning.classList.add('grid')
+    closeWarningButton.focus()
+  }
+
+  function closeWarning() {
+    warning.classList.add('hidden')
+    warning.classList.remove('grid')
+  }
+
+  function showToast(message) {
+    toast.textContent = message
+    toast.classList.remove('hidden')
+    clearTimeout(toastTimer)
+    toastTimer = window.setTimeout(() => toast.classList.add('hidden'), 4000)
+  }
+
+  function makeCard(file, session = {}) {
     const card = document.createElement('article')
     card.className = 'grid grid-cols-[4.5rem_1fr] items-start gap-4 rounded-md border border-dawn-200 p-4 sm:grid-cols-[6rem_1fr]'
 
@@ -54,6 +82,10 @@
     const original = document.createElement('p')
     original.className = 'mt-1 text-xs text-dawn-600'
     original.textContent = `Original: ${bytesLabel(file.size)}`
+    const type = document.createElement('p')
+    type.className = 'mt-1 text-xs text-dawn-600'
+    const extension = file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : ''
+    type.textContent = `Image type: ${file.type || (extension ? `${extension} file` : 'Unknown')}`
     const status = document.createElement('p')
     status.className = 'mt-2 text-xs text-dawn-600'
     status.textContent = 'Loading image…'
@@ -61,10 +93,16 @@
     cardSkeleton.className = 'mt-3 hidden animate-pulse space-y-2'
     cardSkeleton.setAttribute('aria-hidden', 'true')
     cardSkeleton.innerHTML = '<span class="block h-3 w-2/3 rounded bg-dawn-200"></span><span class="block h-3 w-1/2 rounded bg-dawn-100"></span>'
-    details.append(title, original, status, cardSkeleton)
+    details.append(title, original, type, status, cardSkeleton)
     card.append(details)
     results.append(card)
-    const item = { file, card, status, thumbnail, thumbnailSkeleton, cardSkeleton, downloadUrl: null, thumbnailUrl: null, expiryTimer: null, expired: false, downloadName: null }
+    const item = {
+      id: session.id || crypto.randomUUID(),
+      expiresAt: session.expiresAt || Date.now() + itemLifetimeMs,
+      file, card, status, thumbnail, thumbnailSkeleton, cardSkeleton,
+      downloadUrl: null, downloadBlob: session.downloadBlob || null, thumbnailUrl: null,
+      expiryTimer: null, expired: false, downloadName: session.downloadName || null
+    }
     scheduleExpiry(item)
     return item
   }
@@ -78,6 +116,7 @@
     revokeUrl(item.downloadUrl)
     revokeUrl(item.thumbnailUrl)
     item.downloadUrl = null
+    item.downloadBlob = null
     item.thumbnailUrl = null
   }
 
@@ -91,6 +130,7 @@
     if (item.expired) return
     item.expired = true
     clearItemResources(item)
+    deleteToolSession('image-compressor', item.id).catch(() => {})
     item.card.remove()
     const itemIndex = items.indexOf(item)
     if (itemIndex !== -1) items.splice(itemIndex, 1)
@@ -100,7 +140,42 @@
 
   function scheduleExpiry(item) {
     clearTimeout(item.expiryTimer)
-    item.expiryTimer = window.setTimeout(() => expireItem(item), itemLifetimeMs)
+    item.expiryTimer = window.setTimeout(() => expireItem(item), Math.max(0, item.expiresAt - Date.now()))
+  }
+
+  function saveItem(item) {
+    return putToolSession('image-compressor', item.id, {
+      file: item.file,
+      downloadBlob: item.downloadBlob,
+      downloadName: item.downloadName
+    }, item.expiresAt)
+  }
+
+  function reportStorageError() {
+    errorMessage.textContent = 'Your browser could not save these images for refresh recovery. Download any results before leaving.'
+  }
+
+  function renderCompressedOutput(item, blob) {
+    revokeUrl(item.downloadUrl)
+    item.downloadBlob = blob
+    item.downloadUrl = URL.createObjectURL(blob)
+    if (!item.downloadName) {
+      const mime = inputMime(item.file)
+      item.downloadName = `${item.file.name.replace(/\.[^.]+$/, '') || 'image'}-compressed.${extensionFor[mime]}`
+    }
+    const saved = item.file.size ? Math.round((1 - blob.size / item.file.size) * 100) : 0
+    const result = document.createElement('div')
+    result.className = 'mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs'
+    const size = document.createElement('span')
+    size.className = 'text-dawn-700'
+    size.textContent = `${formatLabel[blob.type] || blob.type}: ${bytesLabel(blob.size)} (${saved >= 0 ? `${saved}% smaller` : `${Math.abs(saved)}% larger`})`
+    const link = document.createElement('a')
+    link.className = 'font-bold text-gold-700 underline'
+    link.href = item.downloadUrl
+    link.download = item.downloadName
+    link.textContent = 'Download'
+    result.append(size, link)
+    item.status.replaceChildren(result)
   }
 
   async function showThumbnail(item, blob) {
@@ -166,7 +241,7 @@
         shown = await showThumbnail(item, fallbackBlob)
       }
       if (!shown) throw new Error('Could not display thumbnail')
-      if (item.cardSkeleton.classList.contains('hidden')) item.status.textContent = 'Ready to compress'
+      if (item.cardSkeleton.classList.contains('hidden') && !item.downloadBlob) item.status.textContent = 'Ready to compress'
     } catch {
       if (!item.expired) item.status.textContent = 'Could not prepare this image preview.'
     } finally {
@@ -181,27 +256,39 @@
       errorMessage.textContent = 'Wait for the current compression to finish before adding more images.'
       return
     }
-    const allowedExtensions = /\.(jpe?g|png|webp)$/i
     const selected = Array.from(fileList)
+    const pngFiles = selected.filter((file) => file.type === 'image/png' || /\.png$/i.test(file.name))
+    const rawFiles = selected.filter((file) => rawExtensions.test(file.name))
+    const warningMessages = []
+    if (pngFiles.length) warningMessages.push('PNG uses lossless compression, so this compressor may not reduce its file size. Convert the PNG to JPG to reduce its size; transparency will be replaced with a solid background.')
+    if (rawFiles.length) warningMessages.push('Camera RAW files are not supported by the compressor. Convert them to JPG, PNG, or WebP first.')
+    if (warningMessages.length) showWarning(warningMessages.join(' '))
+    const messages = []
+
+    const allowedExtensions = /\.(jpe?g|webp)$/i
     const images = selected.filter((file) => (
-      ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || allowedExtensions.test(file.name)
+      file.type !== 'image/png' && (['image/jpeg', 'image/webp'].includes(file.type) || allowedExtensions.test(file.name))
     ))
-    if (!images.length) {
-      errorMessage.textContent = 'Choose a JPG, JPEG, PNG, or WebP image.'
+    if (!images.length && !warningMessages.length) {
+      errorMessage.textContent = 'Choose a JPG or WebP image.'
       return
     }
     const validSize = images.filter((file) => file.size <= maxFileBytes)
     const remaining = maxFiles - items.length
     const accepted = validSize.slice(0, Math.max(remaining, 0))
-    const messages = []
-    if (images.length !== selected.length) messages.push('Some files were skipped. Choose JPG, JPEG, PNG, or WebP images.')
-    if (validSize.length !== images.length) messages.push('Images larger than 50 MB were skipped.')
+    if (images.length + pngFiles.length + rawFiles.length !== selected.length) messages.push('Some files were skipped. Choose JPG or WebP images.')
+    if (validSize.length !== images.length) {
+      const message = 'Files larger than 20 MB were skipped.'
+      messages.push(message)
+      showToast(message)
+    }
     if (accepted.length !== validSize.length) messages.push(`You can add up to ${maxFiles} images at a time.`)
     errorMessage.textContent = messages.join(' ')
     for (const file of accepted) {
       const item = makeCard(file)
       items.push(item)
       createWebpThumbnail(item)
+      saveItem(item).catch(reportStorageError)
     }
     if (accepted.length) {
       downloadAllButton.classList.add('hidden')
@@ -246,33 +333,18 @@
       canvas.height = source.naturalHeight || source.height
       const context = canvas.getContext('2d')
       if (!context) throw new Error('Canvas image processing is unavailable in this browser.')
-      if (format.value === 'image/jpeg') {
+      const mime = inputMime(item.file)
+      if (mime === 'image/jpeg') {
         context.fillStyle = '#fff'
         context.fillRect(0, 0, canvas.width, canvas.height)
       }
       context.drawImage(source, 0, 0)
-      const mime = format.value
       const blob = await canvasBlob(canvas, mime, mime === 'image/png' ? undefined : Number(quality.value) / 100)
       if (item.expired) throw new Error('This image expired and was cleared. Add it again to compress it.')
-      if (item.downloadUrl) URL.revokeObjectURL(item.downloadUrl)
-      item.downloadUrl = URL.createObjectURL(blob)
       const baseName = item.file.name.replace(/\.[^.]+$/, '') || 'image'
       item.downloadName = `${baseName}-compressed.${extensionFor[mime]}`
-      scheduleExpiry(item)
-
-      const result = document.createElement('div')
-      result.className = 'mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs'
-      const size = document.createElement('span')
-      const saved = item.file.size ? Math.round((1 - blob.size / item.file.size) * 100) : 0
-      size.className = 'text-dawn-700'
-      size.textContent = `${formatLabel[mime]}: ${bytesLabel(blob.size)} (${saved >= 0 ? `${saved}% smaller` : `${Math.abs(saved)}% larger`})`
-      const link = document.createElement('a')
-      link.className = 'font-bold text-gold-700 underline'
-      link.href = item.downloadUrl
-      link.download = item.downloadName
-      link.textContent = 'Download'
-      result.append(size, link)
-      item.status.replaceChildren(result)
+      renderCompressedOutput(item, blob)
+      saveItem(item).catch(reportStorageError)
       fetch('/api/analytics/image-conversion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -289,9 +361,14 @@
     addFiles(input.files)
     input.value = ''
   })
+  closeWarningButton.addEventListener('click', closeWarning)
+  warning.addEventListener('click', (event) => {
+    if (event.target === warning) closeWarning()
+  })
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !warning.classList.contains('hidden')) closeWarning()
+  })
   quality.addEventListener('input', () => { qualityValue.value = `${quality.value}%` })
-  format.addEventListener('change', updateFormatControls)
-  updateFormatControls()
 
   for (const eventName of ['dragenter', 'dragover']) {
     dropZone.addEventListener(eventName, (event) => {
@@ -355,6 +432,7 @@
     for (const item of items) {
       item.expired = true
       clearItemResources(item)
+      deleteToolSession('image-compressor', item.id).catch(() => {})
     }
     items.length = 0
     results.replaceChildren()
@@ -362,16 +440,21 @@
     updateQueueControls()
   })
 
-  function clearAllOnExit() {
-    for (const item of [...items]) {
-      item.expired = true
-      clearItemResources(item)
+  getToolSessions('image-compressor').then(async (sessions) => {
+    for (const session of sessions) {
+      if (!session.payload?.file || items.length >= maxFiles) continue
+      const item = makeCard(session.payload.file, {
+        id: session.key,
+        expiresAt: session.expiresAt,
+        downloadBlob: session.payload.downloadBlob,
+        downloadName: session.payload.downloadName
+      })
+      items.push(item)
+      await createWebpThumbnail(item)
+      if (item.downloadBlob) renderCompressedOutput(item, item.downloadBlob)
     }
-    items.length = 0
-    input.value = ''
-    results.replaceChildren()
     updateQueueControls()
-  }
-
-  window.addEventListener('pagehide', clearAllOnExit)
+  }).catch(() => {
+    errorMessage.textContent = 'Saved images could not be restored from this browser.'
+  })
 })()

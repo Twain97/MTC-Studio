@@ -14,7 +14,7 @@
 
 @layer components {
   .site-container { @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-10; }
-  .section-pad { @apply py-20 md:py-28; }
+  .section-pad { @apply py-5 md:py-28; }
   .eyebrow { @apply text-[16px] font-bold uppercase tracking-[.24em]; }
   .section-title { @apply font-display text-4xl font-semibold leading-[1.05] text-dawn-500 sm:text-5xl lg:text-6xl; }
   .site-header { @apply sticky top-0 z-40 border-b border-white/10 bg-dawn-950/95 shadow-lg backdrop-blur; }
@@ -48,12 +48,29 @@
   .metric-card p { @apply pt-1 text-xs font-bold uppercase tracking-[.13em] text-dawn-500; }
   .metric-card strong { @apply col-span-2 mt-7 font-display text-5xl font-semibold text-dawn-950; }
   .upload-box { @apply flex min-h-36 cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-dawn-300 bg-dawn-50 p-5 text-center text-dawn-600 transition hover:border-gold-500 hover:bg-gold-50; }
+  .background-upload-box { min-height: 4rem; padding: 1rem; }
+  .background-editor-viewport { background-color: #fff; background-image: conic-gradient(#d1d5db 25%, #fff 0 50%, #d1d5db 0 75%, #fff 0); background-size: 20px 20px; }
   .upload-box strong { @apply text-sm text-dawn-800; }
   .upload-box span { @apply text-xs text-dawn-400; }
 }
 
+.warning-icon-x {
+  transform-style: preserve-3d;
+  animation: warning-icon-turn 4s linear infinite;
+}
+
+@keyframes warning-icon-turn {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .has-opening .portfolio-card { transition-duration: 0.01ms; }
+  .warning-icon-x { animation: none; }
+}
+
+.sr-only {
+  height: 0;
 }
 
 .logo-crop {

@@ -1,0 +1,52 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main>
+  <section class="bg-dawn-900 py-2 text-white sm:py-4 md:py-3">
+    <div class="site-container">
+      <h1 class="section-title mt-2 !text-2xl text-white sm:!text-2xl lg:!text-[30px]">Image Image Converter</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-7 text-dawn-200 sm:mt-5 md:text-base">Convert JPG, PNG, WebP, and supported camera RAW images to the format you need. Files are processed in your browser and are never uploaded to MTC Studio.</p>
+    </div>
+  </section>
+
+  <section class="section-pad lg:pt-6">
+    <div class="site-container mx-auto max-w-4xl">
+      <div class="grid gap-7 rounded-md border border-dawn-200 bg-white p-5 shadow-sm sm:p-8">
+        <label class="upload-box rounded-md" data-converter-drop-zone>
+          <input class="sr-only" type="file" accept="image/*,.raw,.cr2,.cr3,.nef,.nrw,.arw,.srf,.sr2,.dng,.raf,.orf,.rw2,.pef,.ptx,.srw,.3fr,.fff,.iiq,.kdc,.dcr,.mos,.mrw,.x3f,.rwl,.cap,.eip" multiple data-converter-files />
+          <strong>Drop images here or choose files</strong>
+          <span>Up to 5 images at a time, 20 MB maximum per file. Includes JPG, PNG, WebP, and common camera RAW files.</span>
+        </label>
+        <label class="form-label">
+          Convert images to
+          <select class="form-input" data-converter-format>
+            <option value="image/jpeg">JPG (JPEG)</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </label>
+        <div class="grid gap-3 text-xs leading-6 text-dawn-600 sm:grid-cols-3">
+          <p><strong class="text-dawn-900">JPG</strong><br />Good for photos and compact files. Transparency becomes white.</p>
+          <p><strong class="text-dawn-900">PNG</strong><br />Lossless and supports transparency. Often larger for photos.</p>
+          <p><strong class="text-dawn-900">WebP</strong><br />Compact and supports transparency. Some older apps may not open it.</p>
+        </div>
+        <p class="text-sm text-red-700" role="alert" aria-live="polite" data-converter-error></p>
+        <div class="flex flex-wrap gap-3">
+          <button class="btn-dark rounded-md" type="button" data-convert disabled>Convert images</button>
+          <button class="btn-outline-dark rounded-md hidden" type="button" data-converter-download-all>Download all</button>
+          <button class="btn-outline-dark rounded-md hidden" type="button" data-converter-clear>Clear images</button>
+        </div>
+        <div class="hidden items-center gap-3 text-sm text-dawn-700" role="status" aria-live="polite" data-converter-progress>
+          <span class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-dawn-300 border-t-gold-500" aria-hidden="true"></span>
+          <span data-converter-progress-label>Preparing images…</span>
+        </div>
+        <div class="grid gap-4" aria-live="polite" data-converter-results></div>
+        <p class="flex items-start gap-2 text-xs leading-5 text-red-700" role="note"><span class="warning-icon-x mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-700 text-[10px] font-bold" aria-hidden="true">!</span><span><strong>Privacy:</strong> Uploaded images and converted results stay in this browser on your device, survive refreshes, and are cleared after 30 minutes or when you clear them. Downloaded files stay on your device.</span></p>
+      </div>
+    </div>
+  </section>
+  <div class="pointer-events-none fixed inset-x-4 bottom-5 z-50 mx-auto hidden max-w-md rounded-md border border-red-200 bg-white px-5 py-4 text-sm font-semibold text-red-800 shadow-xl" role="status" aria-live="polite" data-converter-toast></div>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/whatsapp', { whatsappNumber }) %>
+<script type="module" src="/js/image-converter.js"></script>
+<%- include('../partials/site-scripts') %>

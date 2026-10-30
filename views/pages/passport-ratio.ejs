@@ -1,0 +1,95 @@
+<%- include('../partials/head', { title, bodyClass: 'min-h-screen bg-dawn-50 text-dawn-950' }) %>
+<%- include('../partials/site-header', { page }) %>
+<main>
+  <section class="bg-dawn-900 py-2 text-white sm:py-4 md:py-3">
+    <div class="site-container">
+      <h1 class="section-title mt-2 !text-2xl text-white sm:!text-2xl lg:!text-[30px]">Passport Ratio</h1>
+    </div>
+  </section>
+
+  <section class="section-pad pt-2.5 md:pt-14">
+    <div class="site-container mx-auto max-w-5xl">
+      <div class="grid gap-4 rounded-md border border-dawn-200 bg-white p-3 shadow-sm sm:p-5">
+        <p class="text-sm leading-6 text-dawn-600">Set aspect ratio for passport photos and others</p>
+        <label class="upload-box rounded-md" data-passport-drop-zone>
+          <input class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" data-passport-file />
+          <strong>Drop one image here or choose a file</strong>
+          <span>JPG, PNG, or WebP. Maximum file size: 20 MB.</span>
+        </label>
+        <div class="hidden items-center gap-4 rounded-md border border-dawn-200 bg-dawn-50 p-3" data-passport-source-info>
+          <div class="min-w-0 flex-1"><p class="text-xs font-bold uppercase tracking-wide text-dawn-700">Selected image</p><p class="mt-1 break-all text-sm text-dawn-600" data-passport-file-name></p></div>
+          <button class="btn-outline-dark shrink-0 rounded-md px-3 py-2 text-xs" type="button" data-passport-clear>Clear</button>
+        </div>
+        <button class="hidden w-full rounded-md border border-dawn-200 bg-dawn-50 p-4 text-left transition hover:border-dawn-400 hover:bg-white focus:outline-none focus:ring-2 focus:ring-gold-500 sm:p-5" type="button" data-passport-edit-open>
+          <span class="flex items-center justify-between gap-4"><span><span class="block font-semibold text-dawn-900">Edit Photo</span><span class="mt-1 block text-sm text-dawn-600">Choose an aspect ratio and position the crop frame.</span></span><span class="shrink-0 rounded-md bg-dawn-900 px-4 py-2 text-sm font-semibold text-white">Edit</span></span>
+        </button>
+        <div class="flex flex-wrap items-center gap-2">
+          <div class="relative hidden" data-passport-download-control>
+            <button class="btn-gold rounded-md px-3 py-2 text-xs" type="button" aria-expanded="false" aria-controls="passport-download-options" data-passport-download-toggle>Download Image</button>
+            <div class="pointer-events-none absolute left-0 top-full z-20 mt-2 grid max-h-0 w-52 -translate-y-1 gap-2 overflow-hidden rounded-md border border-dawn-200 bg-white p-0 opacity-0 shadow-lg transition-all duration-200 ease-out" id="passport-download-options" aria-hidden="true" data-passport-download-options>
+              <div><button class="w-full rounded-md bg-gold-500 px-3 py-2 text-xs font-semibold text-dawn-950" type="button" data-passport-format="image/jpeg">JPEG <span class="font-normal" data-passport-size="image/jpeg">(calculating…)</span></button><p class="mt-1 px-1 text-[10px] leading-4 text-dawn-600">Medium size. Does not support transparency.</p></div>
+              <div><button class="w-full rounded-md bg-gold-200 px-3 py-2 text-xs font-semibold text-dawn-700" type="button" disabled>PNG <span class="font-normal">(unavailable)</span> <span class="font-normal" data-passport-size="image/png"></span></button><p class="mt-1 px-1 text-[10px] leading-4 text-dawn-600">High Quality, transparent background</p></div>
+              <div><button class="w-full rounded-md bg-gold-200 px-3 py-2 text-xs font-semibold text-dawn-700" type="button" disabled>WebP <span class="font-normal">(unavailable)</span> <span class="font-normal" data-passport-size="image/webp"></span></button><p class="mt-1 px-1 text-[10px] leading-4 text-dawn-600">Smallest size. Optimize for websites and fast loading.</p></div>
+            </div>
+          </div>
+        </div>
+        <figure class="hidden grid gap-2" data-passport-preview-wrap>
+          <figcaption class="text-center text-xs font-semibold text-dawn-700" data-passport-preview-caption>Image preview</figcaption>
+          <div class="grid min-h-64 place-items-center overflow-hidden rounded-md border border-dawn-200 bg-dawn-100 p-3 sm:min-h-80"><img class="max-h-[70vh] max-w-full object-contain" alt="Preview of the selected passport photo" data-passport-preview /></div>
+        </figure>
+        <p class="flex items-start gap-2 text-xs leading-5 text-red-700" role="note" data-passport-privacy-warning><span class="warning-icon-x mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-700 text-[10px] font-bold" aria-hidden="true">!</span><span><strong>Privacy:</strong> Your image is stored in this browser on your device, survives refreshes, and is cleared after 30 minutes or when you clear it.</span></p>
+        <p class="hidden text-sm text-red-700" role="alert" aria-live="polite" data-passport-error></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="fixed inset-0 z-40 hidden bg-dawn-950/70" data-passport-editor-overlay>
+    <section class="mx-auto flex h-full w-full flex-col gap-3 overflow-hidden bg-white p-3 sm:gap-4 sm:p-5 lg:my-6 lg:h-[calc(100vh-3rem)] lg:max-w-6xl lg:rounded-lg lg:border lg:border-dawn-200 lg:shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="passport-editor-title">
+      <header class="flex shrink-0 items-center justify-between gap-3">
+        <div><h2 class="text-lg font-bold text-dawn-950" id="passport-editor-title">Edit Passport Ratio</h2><p class="text-xs leading-5 text-dawn-600">Choose a ratio, then drag the highlighted frame to position your crop.</p></div>
+        <button class="btn-outline-dark rounded-md px-3 py-2" type="button" data-passport-editor-close>Close</button>
+      </header>
+      <div class="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden sm:flex-row">
+        <div class="relative flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-auto rounded-md border border-dawn-200 bg-dawn-100" data-passport-viewport>
+          <img class="block max-h-full max-w-full select-none object-contain" alt="Photo being cropped" draggable="false" data-passport-editor-image />
+          <div class="absolute hidden cursor-move touch-none border-2 border-dashed border-white shadow-[0_0_0_9999px_rgba(15,23,42,0.48)] ring-2 ring-gold-400" role="application" aria-label="Crop frame. Drag to reposition." data-passport-crop-frame>
+            <span class="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-dawn-950/90 px-2 py-1 text-[10px] font-bold text-white" data-passport-frame-label></span>
+            <span class="absolute -left-2 -top-2 hidden h-4 w-4 cursor-nwse-resize rounded-full border-2 border-white bg-gold-500 shadow" data-crop-handle="nw" aria-hidden="true"></span>
+            <span class="absolute -right-2 -top-2 hidden h-4 w-4 cursor-nesw-resize rounded-full border-2 border-white bg-gold-500 shadow" data-crop-handle="ne" aria-hidden="true"></span>
+            <span class="absolute -bottom-2 -left-2 hidden h-4 w-4 cursor-nesw-resize rounded-full border-2 border-white bg-gold-500 shadow" data-crop-handle="sw" aria-hidden="true"></span>
+            <span class="absolute -bottom-2 -right-2 hidden h-4 w-4 cursor-nwse-resize rounded-full border-2 border-white bg-gold-500 shadow" data-crop-handle="se" aria-hidden="true"></span>
+          </div>
+        </div>
+        <aside class="flex max-h-[42%] w-full shrink-0 flex-col gap-2 overflow-y-auto rounded-md border border-dawn-200 bg-dawn-50 p-2 sm:max-h-none sm:w-56 sm:gap-3 sm:p-3" aria-label="Aspect ratios">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="text-sm font-bold text-dawn-900">Aspect ratio</h3>
+            <label class="text-right text-[10px] font-semibold text-dawn-700" for="passport-custom-ratio-input">Enter ratio or dimensions</label>
+          </div>
+          <div class="grid gap-2">
+            <input class="w-full rounded-md border border-dawn-300 bg-white px-2 py-2 text-xs text-dawn-900" id="passport-custom-ratio-input" type="text" inputmode="text" enterkeyhint="done" autocapitalize="off" spellcheck="false" maxlength="40" placeholder="4:5, 600 x 750 px, or 35 x 45 mm" autocomplete="off" data-passport-custom-ratio-input />
+            <div class="hidden flex items-center justify-between gap-2 sm:hidden" data-passport-apply-mobile-row>
+              <p class="text-right text-[10px] text-dawn-600">Examples: 4:5, 600 × 750 px, 35 × 45 mm</p>
+              <button class="btn-dark shrink-0 rounded-md px-3 py-2 text-xs" type="button" data-passport-apply>Apply Ratio</button>
+            </div>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" aria-pressed="false" data-passport-ratio-submit>Set ratio</button>
+            <p class="hidden text-[10px] leading-4 text-red-700" role="alert" data-passport-ratio-error></p>
+          </div>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-1" role="group" aria-label="Choose an aspect ratio" data-passport-ratios>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="1" data-ratio-height="1" data-mm-width="51" data-mm-height="51" aria-pressed="false">1:1 <span class="font-normal text-dawn-600" data-ratio-size>(51 × 51 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="5" data-ratio-height="7" data-mm-width="50" data-mm-height="70" aria-pressed="false">5:7 <span class="font-normal text-dawn-600" data-ratio-size>(50 × 70 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="7" data-ratio-height="9" data-mm-width="35" data-mm-height="45" aria-pressed="false">7:9 <span class="font-normal text-dawn-600" data-ratio-size>(35 × 45 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="4" data-ratio-height="5" data-mm-width="40" data-mm-height="50" aria-pressed="false">4:5 <span class="font-normal text-dawn-600" data-ratio-size>(40 × 50 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="7" data-ratio-height="10" data-mm-width="35" data-mm-height="50" aria-pressed="false">7:10 <span class="font-normal text-dawn-600" data-ratio-size>(35 × 50 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-ratio-width="8" data-ratio-height="9" data-mm-width="40" data-mm-height="45" aria-pressed="false">8:9 <span class="font-normal text-dawn-600" data-ratio-size>(40 × 45 mm · — × — px)</span></button>
+            <button class="rounded-md border border-dawn-200 bg-white px-3 py-2 text-left text-xs font-semibold text-dawn-800" type="button" data-passport-custom aria-pressed="false">Custom <span class="font-normal text-dawn-600" data-custom-ratio-size>(free resize)</span></button>
+          </div>
+          <button class="btn-dark hidden w-full rounded-md px-3 py-2 text-xs" type="button" data-passport-apply>Apply Ratio</button>
+        </aside>
+      </div>
+    </section>
+  </div>
+</main>
+<%- include('../partials/site-footer') %>
+<%- include('../partials/whatsapp', { whatsappNumber }) %>
+<script type="module" src="/js/passport-ratio.js"></script>
+<%- include('../partials/site-scripts') %>

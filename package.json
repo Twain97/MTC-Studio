@@ -14,6 +14,7 @@
     "images:variants": "node src/scripts/generate-image-variants.js"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.1",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
@@ -21,16 +22,18 @@
     "express-rate-limit": "^7.5.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "libraw-wasm": "^1.6.0",
     "mongoose": "^8.14.1",
     "morgan": "^1.10.0",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.3",
-    "sharp": "^0.35.5"
+    "nodemailer": "^10.1.0",
+    "sharp": "^0.35.5",
+    "xss": "^1.0.17"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.1.2",
     "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.19"
   }
 }

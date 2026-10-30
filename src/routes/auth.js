@@ -3,12 +3,13 @@ import jwt from 'jsonwebtoken'
 import { Admin } from '../models/Admin.js'
 import { env } from '../config/env.js'
 import { requireAdmin } from '../middleware/auth.js'
+import { sanitizeUserText } from '../lib/sanitizeUserInput.js'
 
 const router = Router()
 
 router.post('/login', async (req, res, next) => {
   try {
-    const email = String(req.body.email || '').toLowerCase().trim()
+    const email = sanitizeUserText(req.body.email).toLowerCase()
     const password = String(req.body.password || '')
     const admin = await Admin.findOne({ email }).select('+password')
 

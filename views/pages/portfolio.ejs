@@ -2,13 +2,13 @@
 <%- include('../partials/site-header', { page }) %>
 <main>
   <section class="page-hero">
-    <div class="site-container relative z-10 py-[4.25rem] text-center md:py-[2.8rem]">
+    <div class="site-container relative z-10 py-[2.125rem] text-center sm:py-[4.25rem] md:py-[2.8rem]">
       <p class="eyebrow text-gold-300">Selected stories</p>
-      <h1 class="mt-4 font-display text-4xl font-semibold text-white md:text-6xl">Portfolio</h1>
-      <p class="mx-auto mt-5 max-w-2xl text-base leading-8 text-dawn-100">Weddings, portraits, celebrations, and commercial stories photographed with clarity and warmth.</p>
+      <h1 class="mt-4 font-display text-2xl font-semibold text-white sm:text-2xl md:text-[30px]">Portfolio</h1>
+      <p class="mx-auto mt-2 max-w-2xl text-sm leading-7 text-dawn-100 sm:mt-5 sm:text-base sm:leading-8">Weddings, portraits, celebrations, and commercial stories photographed with clarity and warmth.</p>
     </div>
   </section>
-  <section class="portfolio section-pad bg-dawn-50">
+  <section class="portfolio section-pad bg-dawn-50 lg:pt-6">
     <div class="site-container">
       <div data-portfolio-grid class="grid grid-flow-dense grid-cols-2 auto-rows-[9rem] gap-3 sm:auto-rows-[10rem] sm:gap-4 lg:grid-cols-6 lg:auto-rows-[10rem] lg:gap-5">
         <% projects.forEach((project, index) => { %>
