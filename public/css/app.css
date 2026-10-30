@@ -1161,12 +1161,12 @@ button:disabled{
   pointer-events: auto;
 }
 
-.visible{
-  visibility: visible;
-}
-
 .\!visible{
   visibility: visible !important;
+}
+
+.visible{
+  visibility: visible;
 }
 
 .fixed{
@@ -1710,16 +1710,16 @@ button:disabled{
   min-width: 5rem;
 }
 
+.min-w-52{
+  min-width: 13rem;
+}
+
 .min-w-8{
   min-width: 2rem;
 }
 
 .min-w-\[28rem\]{
   min-width: 28rem;
-}
-
-.min-w-52{
-  min-width: 13rem;
 }
 
 .max-w-2xl{
@@ -2513,6 +2513,10 @@ button:disabled{
   padding-bottom: 2rem;
 }
 
+.pl-4{
+  padding-left: 1rem;
+}
+
 .pr-4{
   padding-right: 1rem;
 }
@@ -2525,20 +2529,16 @@ button:disabled{
   padding-top: 0.5rem;
 }
 
+.pt-2\.5{
+  padding-top: 0.625rem;
+}
+
 .pt-3{
   padding-top: 0.75rem;
 }
 
 .pt-8{
   padding-top: 2rem;
-}
-
-.pl-4{
-  padding-left: 1rem;
-}
-
-.pt-2\.5{
-  padding-top: 0.625rem;
 }
 
 .text-left{
@@ -3786,12 +3786,12 @@ button:disabled{
     padding-bottom: 2.8rem;
   }
 
-  .md\:pt-4{
-    padding-top: 1rem;
-  }
-
   .md\:pt-14{
     padding-top: 3.5rem;
+  }
+
+  .md\:pt-4{
+    padding-top: 1rem;
   }
 
   .md\:text-2xl{
