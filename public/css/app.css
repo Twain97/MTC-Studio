@@ -1340,6 +1340,10 @@ button:disabled{
   grid-column: span 2 / span 2;
 }
 
+.col-span-3{
+  grid-column: span 3 / span 3;
+}
+
 .row-span-1{
   grid-row: span 1 / span 1;
 }
@@ -2861,10 +2865,6 @@ button:disabled{
   accent-color: #c99435;
 }
 
-.accent-gold-600{
-  accent-color: #ad742a;
-}
-
 .opacity-0{
   opacity: 0;
 }
@@ -3487,6 +3487,10 @@ button:disabled{
 
 .disabled\:cursor-wait:disabled{
   cursor: wait;
+}
+
+.disabled\:opacity-50:disabled{
+  opacity: 0.5;
 }
 
 .group[open] .group-open\:rotate-180{

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getPortfolioProject, getPortfolioProjects } from '../lib/projects.js'
+import { getHomepageProjects, getPortfolioProject, getPortfolioProjects } from '../lib/projects.js'
 import { getSiteSettings } from '../lib/siteSettings.js'
 import { env } from '../config/env.js'
 
@@ -74,13 +74,14 @@ const values = [
 router.get('/', async (_req, res, next) => {
   try {
     const [projects, settings] = await Promise.all([
-      getPortfolioProjects({ limit: 4, oldestFirst: true }),
+      getHomepageProjects(),
       getSiteSettings()
     ])
     res.render('pages/home', {
       title: 'MTC Studio',
       page: 'home',
       projects,
+      mobileProjectIds: new Set(projects.filter((project) => project.homepageMobileFeatured).map((project) => String(project._id))),
       services,
       pricing,
       constructionOverlayEnabled: settings.constructionOverlayEnabled,

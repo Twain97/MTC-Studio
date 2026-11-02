@@ -89,7 +89,6 @@ router.post(
         eventDate: new Date(`${eventDate}-01T12:00:00.000Z`),
         location,
         description,
-        featured: req.body.featured === 'true',
         thumbnail: thumbnailPath,
         thumbnailVariants: thumbnailVariantPaths,
         images: imagePaths,
@@ -108,17 +107,46 @@ router.post(
 
 router.patch('/:id', requireAdmin, async (req, res, next) => {
   try {
-    const update = {
-      eventName: req.body.eventName === undefined ? undefined : sanitizeUserText(req.body.eventName),
-      location: req.body.location === undefined ? undefined : sanitizeUserText(req.body.location),
-      description: req.body.description === undefined ? undefined : sanitizeUserText(req.body.description),
-      featured: req.body.featured
-    }
-    if (req.body.eventDate) update.eventDate = new Date(`${sanitizeUserText(req.body.eventDate)}-01T12:00:00.000Z`)
-    Object.keys(update).forEach((key) => update[key] === undefined && delete update[key])
-
-    const project = await Project.findByIdAndUpdate(req.params.id, update, { new: true, runValidators: true })
+    const project = await Project.findById(req.params.id)
     if (!project) return res.status(404).json({ message: 'Project not found.' })
+
+    if (req.body.eventName !== undefined) project.eventName = sanitizeUserText(req.body.eventName)
+    if (req.body.location !== undefined) project.location = sanitizeUserText(req.body.location)
+    if (req.body.description !== undefined) project.description = sanitizeUserText(req.body.description)
+    if (req.body.eventDate) project.eventDate = new Date(`${sanitizeUserText(req.body.eventDate)}-01T12:00:00.000Z`)
+
+    if (req.body.homepageFeatured !== undefined) {
+      if (typeof req.body.homepageFeatured !== 'boolean') {
+        return res.status(400).json({ message: 'Homepage selection must be true or false.' })
+      }
+      if (req.body.homepageFeatured && !project.homepageFeatured) {
+        const selectedCount = await Project.countDocuments({ homepageFeatured: true })
+        if (selectedCount >= 4) {
+          return res.status(400).json({ message: 'You can select up to four homepage projects.' })
+        }
+      }
+      project.homepageFeatured = req.body.homepageFeatured
+      if (!project.homepageFeatured) project.homepageMobileFeatured = false
+    }
+
+    if (req.body.homepageMobileFeatured !== undefined) {
+      if (typeof req.body.homepageMobileFeatured !== 'boolean') {
+        return res.status(400).json({ message: 'Mobile homepage selection must be true or false.' })
+      }
+      const isSelectedForHomepage = req.body.homepageFeatured ?? project.homepageFeatured
+      if (req.body.homepageMobileFeatured && !isSelectedForHomepage) {
+        return res.status(400).json({ message: 'Select this project for the homepage before adding it to mobile.' })
+      }
+      if (req.body.homepageMobileFeatured && !project.homepageMobileFeatured) {
+        const mobileCount = await Project.countDocuments({ homepageMobileFeatured: true })
+        if (mobileCount >= 2) {
+          return res.status(400).json({ message: 'You can select up to two mobile homepage projects.' })
+        }
+      }
+      project.homepageMobileFeatured = req.body.homepageMobileFeatured
+    }
+
+    await project.save()
     res.json({ message: 'Project updated.', project })
   } catch (error) {
     next(error)

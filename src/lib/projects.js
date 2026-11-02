@@ -13,6 +13,12 @@ export async function getPortfolioProjects({ limit, allowSamples = true, oldestF
   return limit ? fallbackProjects.slice(0, limit) : fallbackProjects
 }
 
+export async function getHomepageProjects() {
+  return Project.find({ homepageFeatured: true })
+    .sort({ eventDate: -1, createdAt: -1 })
+    .limit(4)
+}
+
 export async function getPortfolioProject(id) {
   const sample = sampleProjects.find((project) => project._id === id)
   if (sample) return sample

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const list = document.querySelector('[data-projects-list]')
   const empty = document.querySelector('[data-projects-empty]')
   const count = document.querySelector('[data-project-count]')
+  const homepageSelectionCount = document.querySelector('[data-homepage-selection-count]')
   const thumbnailInput = document.querySelector('[data-thumbnail-input]')
   const thumbnailPreview = document.querySelector('[data-thumbnail-preview]')
   const thumbnailPlaceholder = document.querySelector('[data-thumbnail-placeholder]')
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let thumbnailUrl = ''
   let galleryUrls = []
+  let selectionUpdatePending = false
 
   function clearThumbnailPreview() {
     if (thumbnailUrl) URL.revokeObjectURL(thumbnailUrl)
@@ -138,6 +140,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = await response.json()
     if (!response.ok) throw new Error(data.message || 'Projects could not be loaded.')
     count.textContent = data.projects.length
+    const homepageCount = data.projects.filter((project) => project.homepageFeatured).length
+    const mobileCount = data.projects.filter((project) => project.homepageMobileFeatured).length
+    homepageSelectionCount.textContent = `Homepage: ${homepageCount}/4 · Mobile: ${mobileCount}/2`
     empty.classList.toggle('hidden', Boolean(data.projects.length))
     list.innerHTML = data.projects.map((project) => `
       <article class="grid grid-cols-[100px_1fr_auto] items-center gap-4 border border-dawn-200 bg-white p-3">
@@ -150,6 +155,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           <p class="mt-1 text-xs text-dawn-400">${new Date(project.eventDate).toLocaleDateString('en', { month: 'long', year: 'numeric' })}</p>
         </div>
         <button type="button" class="inline-flex min-w-20 items-center justify-center gap-2 rounded-full p-2 text-red-600 transition hover:bg-red-50 disabled:cursor-wait" data-delete-project="${project._id}" aria-label="Delete project"><span data-delete-label>Delete</span></button>
+        <div class="col-span-3 flex flex-wrap gap-2 border-t border-dawn-100 pt-3">
+          <button type="button" class="rounded-full border px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${project.homepageFeatured ? 'border-gold-500 bg-gold-100 text-dawn-950' : 'border-dawn-200 text-dawn-700 hover:bg-dawn-50'}" data-homepage-project="${project._id}" ${!project.homepageFeatured && homepageCount >= 4 ? 'disabled title="Four projects are already selected for the homepage"' : ''}>${project.homepageFeatured ? 'Remove from homepage' : 'Show on homepage'}</button>
+          <button type="button" class="rounded-full border px-3 py-2 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${project.homepageMobileFeatured ? 'border-gold-500 bg-gold-100 text-dawn-950' : 'border-dawn-200 text-dawn-700 hover:bg-dawn-50'}" data-mobile-project="${project._id}" ${!project.homepageFeatured || (!project.homepageMobileFeatured && mobileCount >= 2) ? 'disabled title="Select a homepage project; up to two can appear on mobile"' : ''}>${project.homepageMobileFeatured ? 'Remove from mobile' : 'Show on mobile'}</button>
+        </div>
       </article>
     `).join('')
 
@@ -188,6 +197,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     bindUploadImageOpen(list)
   }
+
+  list.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-homepage-project], [data-mobile-project]')
+    if (!button || button.disabled || selectionUpdatePending) return
+
+    const isMobileSelection = button.hasAttribute('data-mobile-project')
+    const id = button.getAttribute(isMobileSelection ? 'data-mobile-project' : 'data-homepage-project')
+    const current = button.textContent.includes('Remove')
+    const payload = isMobileSelection
+      ? { homepageMobileFeatured: !current }
+      : { homepageFeatured: !current }
+    selectionUpdatePending = true
+    button.disabled = true
+
+    try {
+      const response = await apiFetch(`/api/projects/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.message || 'Homepage selection could not be updated.')
+      setNotice('success', result.message)
+      await loadProjects()
+    } catch (error) {
+      button.disabled = false
+      setNotice('error', error.message || 'Homepage selection could not be updated.')
+    } finally {
+      selectionUpdatePending = false
+    }
+  })
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault()

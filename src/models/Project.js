@@ -18,7 +18,8 @@ const projectSchema = new mongoose.Schema(
       validate: [(value) => value.length <= 10, 'A project can contain at most ten gallery images.']
     },
     imageVariants: [{ small: String, smallWidth: Number, large: String, largeWidth: Number }],
-    featured: { type: Boolean, default: false }
+    homepageFeatured: { type: Boolean, default: false },
+    homepageMobileFeatured: { type: Boolean, default: false }
   },
   { timestamps: true }
 )
