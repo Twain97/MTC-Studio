@@ -28,7 +28,7 @@
   .portfolio-card { @apply overflow-hidden border border-dawn-200 bg-white shadow-sm outline-none transition duration-300 hover:-translate-y-1 hover:shadow-xl focus:ring-2 focus:ring-gold-400; }
   .contract-project-card { overflow: visible; }
   .contract-collage { position: relative; isolation: isolate; height: clamp(12rem, 56vw, 18rem); margin: .75rem .5rem 0; }
-  .contract-collage-photo { position: absolute; top: 50%; left: 0; width: 44%; height: 100%; overflow: hidden; border: 1px solid white; border-radius: .65rem; background: #e5edf3; box-shadow: 0 10px 24px rgba(23, 35, 44, .22); opacity: .78; filter: blur(2px); transform: translate3d(0, -50%, 0) scale(.95); transition: left 1.05s cubic-bezier(.22, 1, .36, 1), transform 1.05s cubic-bezier(.22, 1, .36, 1), filter 1.05s ease, opacity 1.05s ease, box-shadow .85s ease; }
+  .contract-collage-photo { position: absolute; top: 50%; left: 0; width: 44%; height: 100%; overflow: hidden; border: 1px solid white; border-radius: .65rem; background: #e5edf3; box-shadow: 0 10px 24px rgba(23, 35, 44, .22); opacity: .78; filter: blur(2px); transform: translate3d(0, -50%, 0) scale(.95); transition: left var(--collage-transition-duration, 1.05s) cubic-bezier(.22, 1, .36, 1), transform var(--collage-transition-duration, 1.05s) cubic-bezier(.22, 1, .36, 1), filter var(--collage-transition-duration, 1.05s) ease, opacity var(--collage-transition-duration, 1.05s) ease, box-shadow .85s ease; }
   .contract-collage-photo.is-left { left: 0; z-index: 1; }
   .contract-collage-photo.is-center { left: 28%; z-index: 2; }
   .contract-collage-photo.is-right { left: 56%; z-index: 3; }

@@ -19,7 +19,8 @@
           <input type="file" name="thumbnail" accept="image/jpeg,image/png,image/webp" class="sr-only" required data-thumbnail-input />
         </label>
         <div class="grid h-44 place-items-center border border-dashed border-dawn-300 bg-dawn-50 text-xs uppercase tracking-[.14em] text-dawn-400" data-thumbnail-placeholder>Thumbnail preview</div>
-        <figure class="hidden overflow-hidden border border-dawn-200 bg-white" data-thumbnail-preview-card>
+        <figure class="relative hidden overflow-hidden border border-dawn-200 bg-white" data-thumbnail-preview-card>
+          <button type="button" class="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-dawn-950/80 text-lg leading-none text-white shadow transition hover:bg-red-600" aria-label="Remove selected thumbnail" title="Remove selected thumbnail" data-remove-thumbnail>&times;</button>
           <img src="" alt="Thumbnail preview" class="h-44 w-full object-cover" data-thumbnail-preview />
           <figcaption class="grid gap-1 border-t border-dawn-200 p-3 text-xs text-dawn-500">
             <strong class="text-sm text-dawn-800" data-thumbnail-name></strong>
@@ -40,7 +41,10 @@
       </div>
 
       <p class="mt-5 hidden text-sm" data-upload-notice></p>
-      <button class="btn-dark mt-7" type="submit" data-submit-label="Publish project">Publish project</button>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <button class="btn-dark" type="submit" data-submit-label="Publish project">Publish project</button>
+        <button class="rounded-full border border-dawn-300 px-5 py-3 text-xs font-bold uppercase tracking-[.14em] text-dawn-700 transition hover:border-red-300 hover:bg-red-50 hover:text-red-700" type="button" data-cancel-selected-images>Cancel selected images</button>
+      </div>
     </form>
 
     <aside>

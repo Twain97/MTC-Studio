@@ -906,7 +906,7 @@ button:disabled{
   opacity: .78;
   filter: blur(2px);
   transform: translate3d(0, -50%, 0) scale(.95);
-  transition: left 1.05s cubic-bezier(.22, 1, .36, 1), transform 1.05s cubic-bezier(.22, 1, .36, 1), filter 1.05s ease, opacity 1.05s ease, box-shadow .85s ease;
+  transition: left var(--collage-transition-duration, 1.05s) cubic-bezier(.22, 1, .36, 1), transform var(--collage-transition-duration, 1.05s) cubic-bezier(.22, 1, .36, 1), filter var(--collage-transition-duration, 1.05s) ease, opacity var(--collage-transition-duration, 1.05s) ease, box-shadow .85s ease;
 }
 
 .contract-collage-photo.is-left {
@@ -1298,6 +1298,14 @@ button:disabled{
 
 .top-full{
   top: 100%;
+}
+
+.right-2{
+  right: 0.5rem;
+}
+
+.top-2{
+  top: 0.5rem;
 }
 
 .isolate{
@@ -3405,6 +3413,11 @@ button:disabled{
   border-color: rgb(201 148 53 / var(--tw-border-opacity, 1));
 }
 
+.hover\:border-red-300:hover{
+  --tw-border-opacity: 1;
+  border-color: rgb(252 165 165 / var(--tw-border-opacity, 1));
+}
+
 .hover\:bg-dawn-50:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(243 247 250 / var(--tw-bg-opacity, 1));
@@ -3439,6 +3452,11 @@ button:disabled{
   background-color: rgb(255 255 255 / 0.1);
 }
 
+.hover\:bg-red-600:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:text-dawn-950:hover{
   --tw-text-opacity: 1;
   color: rgb(23 35 44 / var(--tw-text-opacity, 1));
@@ -3447,6 +3465,11 @@ button:disabled{
 .hover\:text-gold-300:hover{
   --tw-text-opacity: 1;
   color: rgb(228 197 116 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-red-700:hover{
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity, 1));
 }
 
 .hover\:shadow-xl:hover{

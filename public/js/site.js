@@ -39,13 +39,18 @@ function initContractCollages() {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (reducedMotion) return
 
+  const isMobile = window.matchMedia('(max-width: 639px)').matches
+  const mobileHomepageCollages = isMobile
+    ? Array.from(document.querySelectorAll('[data-project-grid] .contract-project-card:not(.hidden) [data-contract-collage]'))
+    : []
+
   document.querySelectorAll('[data-contract-collage]').forEach((collage, collageIndex) => {
     const photos = Array.from(collage.querySelectorAll('[data-collage-photo]'))
     if (photos.length < 2) return
 
     const frontOrder = photos.length >= 3 ? [1, 0, 2] : [1, 0]
     let sequenceIndex = 0
-    window.setInterval(() => {
+    const advance = () => {
       if (document.hidden) return
       sequenceIndex = (sequenceIndex + 1) % frontOrder.length
       const frontIndex = frontOrder[sequenceIndex]
@@ -59,7 +64,20 @@ function initContractCollages() {
         else if (photos.length > 2 && index === rightIndex) photo.classList.add('is-right')
         else photo.classList.add('is-left')
       })
-    }, 2600 + (collageIndex % 3) * 240)
+    }
+
+    const mobileIndex = mobileHomepageCollages.indexOf(collage)
+    if (mobileIndex >= 0 && mobileIndex < 2) {
+      const transitionDuration = mobileIndex === 0 ? '850ms' : '1250ms'
+      photos.forEach((photo) => photo.style.setProperty('--collage-transition-duration', transitionDuration))
+      window.setTimeout(() => {
+        advance()
+        window.setInterval(advance, 4200)
+      }, 1600 * (mobileIndex + 1))
+      return
+    }
+
+    window.setInterval(advance, 2600 + (collageIndex % 3) * 240)
   })
 }
 

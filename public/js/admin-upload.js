@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const thumbnailSize = document.querySelector('[data-thumbnail-size]')
   const imagesInput = document.querySelector('[data-images-input]')
   const galleryPreviews = document.querySelector('[data-gallery-previews]')
+  const cancelSelectedImagesButton = document.querySelector('[data-cancel-selected-images]')
   const uploadProgress = document.querySelector('[data-upload-progress]')
   const uploadProgressBar = document.querySelector('[data-upload-progress-bar]')
   const submitButton = form.querySelector('button[type="submit"]')
@@ -99,6 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     clearThumbnailPreview()
     const file = thumbnailInput.files?.[0]
     if (!file) {
+      thumbnailPreview.removeAttribute('src')
+      thumbnailName.textContent = ''
+      thumbnailSize.textContent = ''
       thumbnailPreviewCard.classList.add('hidden')
       thumbnailPlaceholder.classList.remove('hidden')
       return
@@ -119,7 +123,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     galleryPreviews.innerHTML = files.map((file, index) => {
       const url = galleryUrls[index]
       return `
-        <figure class="overflow-hidden rounded-[1.5rem] border border-dawn-200 bg-white shadow-sm">
+        <figure class="relative overflow-hidden rounded-[1.5rem] border border-dawn-200 bg-white shadow-sm">
+          <button type="button" class="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-full bg-dawn-950/80 text-lg leading-none text-white shadow transition hover:bg-red-600" aria-label="Remove ${escapeHtml(file.name)}" title="Remove image" data-remove-gallery-image="${index}">&times;</button>
           <button type="button" class="block w-full" data-upload-image-open="${url}" data-upload-image-title="${escapeHtml(file.name)} preview">
             <img src="${url}" class="h-28 w-full object-cover transition duration-300 hover:scale-105" alt="${escapeHtml(file.name)} preview" />
           </button>
@@ -133,6 +138,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     galleryPreviews.classList.toggle('hidden', !files.length)
     galleryPreviews.classList.toggle('grid', Boolean(files.length))
     bindUploadImageOpen(galleryPreviews)
+  })
+
+  thumbnailPreviewCard.querySelector('[data-remove-thumbnail]').addEventListener('click', () => {
+    thumbnailInput.value = ''
+    thumbnailInput.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+
+  galleryPreviews.addEventListener('click', (event) => {
+    const removeButton = event.target.closest('[data-remove-gallery-image]')
+    if (!removeButton) return
+
+    const removedIndex = Number(removeButton.getAttribute('data-remove-gallery-image'))
+    const remainingFiles = Array.from(imagesInput.files || []).filter((_, index) => index !== removedIndex)
+    const transfer = new DataTransfer()
+    remainingFiles.forEach((file) => transfer.items.add(file))
+    imagesInput.files = transfer.files
+    imagesInput.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+
+  cancelSelectedImagesButton.addEventListener('click', () => {
+    thumbnailInput.value = ''
+    imagesInput.value = ''
+    clearThumbnailPreview()
+    clearGalleryPreviews()
+    thumbnailPreview.removeAttribute('src')
+    thumbnailName.textContent = ''
+    thumbnailSize.textContent = ''
+    thumbnailPreviewCard.classList.add('hidden')
+    thumbnailPlaceholder.classList.remove('hidden')
+    galleryPreviews.innerHTML = ''
+    galleryPreviews.classList.add('hidden')
+    galleryPreviews.classList.remove('grid')
+    clearProgress()
+    clearNotice()
   })
 
   async function loadProjects() {
