@@ -3,6 +3,11 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
 (() => {
   const fileInput = document.querySelector('[data-passport-file]')
   if (!fileInput) return
+  const unitOverlay = document.querySelector('[data-passport-unit-overlay]')
+  const unitButtons = [...document.querySelectorAll('[data-passport-unit]')]
+  const unitHeading = document.querySelector('[data-passport-unit-heading]')
+  const inputLabel = document.querySelector('[data-passport-input-label]')
+  const unitExample = document.querySelector('[data-passport-unit-example]')
 
   const maxFileBytes = 20 * 1024 * 1024
   const imageLifetimeMs = 30 * 60 * 1000
@@ -40,6 +45,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   const sizeLabels = Object.fromEntries([...document.querySelectorAll('[data-passport-size]')].map((element) => [element.dataset.passportSize, element]))
 
   let sourceFile = null
+  let measurementUnit = null
   let originalCanvas = null
   let appliedCanvas = null
   let outputCanvas = null
@@ -51,6 +57,31 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   let encodedCache = null
   let expirationTimer = null
   let expiresAt = 0
+
+  const units = {
+    ratio: { title: 'Aspect ratio', suffix: '', factor: 1, decimals: 0, placeholder: '4:5' },
+    mm: { title: 'Dimensions (mm)', suffix: 'mm', factor: 1, decimals: 0, placeholder: '35 x 45 mm' },
+    cm: { title: 'Dimensions (cm)', suffix: 'cm', factor: 10, decimals: 1, placeholder: '3.5 x 4.5 cm' },
+    in: { title: 'Dimensions (inches)', suffix: 'in', factor: 25.4, decimals: 2, placeholder: '1.38 x 1.77 in' }
+  }
+
+  function formatPhysical(mm) {
+    const unit = units[measurementUnit]
+    return Number((mm / unit.factor).toFixed(unit.decimals)).toString()
+  }
+
+  function physicalLabel(button) {
+    return `${formatPhysical(Number(button.dataset.mmWidth))} × ${formatPhysical(Number(button.dataset.mmHeight))} ${units[measurementUnit].suffix}`
+  }
+
+  function updateUnitDisplay() {
+    const unit = units[measurementUnit]
+    unitHeading.textContent = unit.title
+    inputLabel.textContent = measurementUnit === 'ratio' ? 'Enter a ratio' : `Enter a ratio or ${unit.suffix} dimensions`
+    customRatioInput.placeholder = unit.placeholder
+    unitExample.textContent = measurementUnit === 'ratio' ? 'Example: 4:5' : `Examples: 4:5 or ${unit.placeholder}`
+    updatePresetSizeLabels()
+  }
 
   function showError(message) {
     error.textContent = message
@@ -128,9 +159,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     for (const handle of resizeHandles) handle.classList.add('hidden')
     for (const label of presetSizeLabels) label.textContent = '(— × — px)'
     customSizeLabel.textContent = '(free resize)'
-    ratioButtons.forEach((button, index) => {
-      presetSizeLabels[index].textContent = `(${button.dataset.mmWidth} × ${button.dataset.mmHeight} mm · — × — px)`
-    })
+    updatePresetSizeLabels()
     for (const label of Object.values(sizeLabels)) label.textContent = ''
     setDownloadOpen(false)
     editorOverlay.classList.add('hidden')
@@ -147,18 +176,22 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     button.classList.toggle('bg-white', !active)
   }
 
-  function sanitizeAspectInput(value, keepUnits = false) {
-    const sanitized = String(value).slice(0, 40).replace(/[^0-9.:/xXmM×\s]/g, '')
-    return keepUnits ? sanitized : sanitized.replace(/mm/gi, '').replace(/[mM]/g, '')
+  function sanitizeAspectInput(value) {
+    return String(value).slice(0, 40).replace(/[^0-9.:/xX×a-zA-Z\s]/g, '')
   }
 
   function parseAspectInput(value) {
-    const normalized = sanitizeAspectInput(value).trim().replace(/[xX×/]/g, ':')
-    const match = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*:\s*(\d+(?:\.\d{1,4})?)$/)
-    if (!match) throw new Error('Enter a ratio such as 4:5 or pixel dimensions such as 600 × 750 px.')
+    const normalized = String(value).trim().replace(/\s+/g, ' ')
+    const ratioMatch = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*:\s*(\d+(?:\.\d{1,4})?)$/)
+    const dimensionMatch = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*(?:x|×)\s*(\d+(?:\.\d{1,4})?)(?:\s*(mm|cm|in|inch|inches))?$/i)
+    const match = ratioMatch || dimensionMatch
+    if (!match || (measurementUnit === 'ratio' && !ratioMatch)) throw new Error(measurementUnit === 'ratio' ? 'Enter a ratio such as 4:5.' : `Enter a ratio or dimensions in ${units[measurementUnit].suffix}.`)
     const width = Number(match[1])
     const height = Number(match[2])
-    const aspect = width / height
+    const inputUnit = ratioMatch ? 'ratio' : (dimensionMatch[3] || measurementUnit).toLowerCase()
+    const factors = { ratio: 1, mm: 1, cm: 10, in: 25.4, inch: 25.4, inches: 25.4 }
+    if (inputUnit !== 'ratio' && inputUnit !== measurementUnit) throw new Error(`Use ${units[measurementUnit].suffix} for dimensions, or enter a ratio.`)
+    const aspect = inputUnit === 'ratio' ? width / height : (width * factors[inputUnit]) / (height * factors[inputUnit])
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 || width > 100000 || height > 100000 || aspect < 0.05 || aspect > 20) {
       throw new Error('Enter positive dimensions with a ratio between 1:20 and 20:1.')
     }
@@ -171,7 +204,9 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     while (b) [a, b] = [b, a % b]
     ratioWidth /= Math.max(1, a)
     ratioHeight /= Math.max(1, a)
-    return { width: ratioWidth, height: ratioHeight, label: `${ratioWidth}:${ratioHeight}`, fromInput: true }
+    return { width: ratioWidth, height: ratioHeight, label: `${ratioWidth}:${ratioHeight}`, fromInput: true,
+      physicalWidth: inputUnit === 'ratio' ? null : width * factors[inputUnit],
+      physicalHeight: inputUnit === 'ratio' ? null : height * factors[inputUnit] }
   }
 
   function clearRatioInputError() {
@@ -214,7 +249,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       updatePresetSizeLabels()
       setPreview()
       if (!options.restore) {
-        putToolSession('passport-ratio', 'current', { file }, expiresAt).catch(() => {
+        putToolSession('passport-ratio', 'current', { file, measurementUnit }, expiresAt).catch(() => {
           showError('Your browser could not save this image for refresh recovery.')
         })
       }
@@ -240,7 +275,13 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     cropFrame.style.height = `${selection.height * scaleY}px`
     const cropWidth = Math.max(1, Math.round(selection.width))
     const cropHeight = Math.max(1, Math.round(selection.height))
-    frameLabel.textContent = `${cropWidth} × ${cropHeight} px · ${isCustomRatio ? getReducedRatio(cropWidth, cropHeight) : activeRatioLabel}`
+    const selectedButton = ratioButtons.find((button) => button.getAttribute('aria-pressed') === 'true')
+    let dimensionsLabel = getReducedRatio(cropWidth, cropHeight)
+    if (!isCustomRatio && measurementUnit !== 'ratio') {
+      if (selectedButton) dimensionsLabel = physicalLabel(selectedButton)
+      else if (lastSelectedRatio?.physicalWidth) dimensionsLabel = `${formatPhysical(lastSelectedRatio.physicalWidth)} × ${formatPhysical(lastSelectedRatio.physicalHeight)} ${units[measurementUnit].suffix}`
+    }
+    frameLabel.textContent = `${cropWidth} × ${cropHeight} px · ${dimensionsLabel}`
     if (isCustomRatio) customSizeLabel.textContent = `(${cropWidth} × ${cropHeight} px · ${getReducedRatio(cropWidth, cropHeight)})`
     cropFrame.classList.remove('hidden')
   }
@@ -252,15 +293,15 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   }
 
   function updatePresetSizeLabels() {
+    if (!measurementUnit) return
     for (let index = 0; index < ratioButtons.length; index += 1) {
       const button = ratioButtons[index]
-      const dimensions = fitRatio(outputCanvas.width, outputCanvas.height, Number(button.dataset.ratioWidth), Number(button.dataset.ratioHeight))
-      presetSizeLabels[index].textContent = `(${Math.round(dimensions.width)} × ${Math.round(dimensions.height)} px)`
-    }
-    for (let index = 0; index < ratioButtons.length; index += 1) {
-      const button = ratioButtons[index]
-      const pixels = presetSizeLabels[index].textContent.slice(1, -1)
-      presetSizeLabels[index].textContent = `(${button.dataset.mmWidth} × ${button.dataset.mmHeight} mm · ${pixels})`
+      const dimensions = outputCanvas ? fitRatio(outputCanvas.width, outputCanvas.height, Number(button.dataset.ratioWidth), Number(button.dataset.ratioHeight)) : null
+      const pixels = dimensions ? `${Math.round(dimensions.width)} × ${Math.round(dimensions.height)} px` : '— × — px'
+      const dimensionsLabel = measurementUnit === 'ratio'
+        ? `${button.dataset.ratioWidth}:${button.dataset.ratioHeight}`
+        : physicalLabel(button)
+      presetSizeLabels[index].textContent = `(${dimensionsLabel} · ${pixels})`
     }
   }
 
@@ -289,7 +330,9 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       width: ratio.width,
       height: ratio.height,
       label: ratio.label,
-      type: ratio.fromInput ? 'input' : 'preset'
+      type: ratio.fromInput ? 'input' : 'preset',
+      physicalWidth: ratio.physicalWidth,
+      physicalHeight: ratio.physicalHeight
     }
     frameLabel.textContent = ratio.label
     setApplyButtonVisibility(true)
@@ -511,22 +554,22 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     }))
   }
 
-  async function downloadJpeg() {
-    const button = document.querySelector('[data-passport-format="image/jpeg"]')
+  async function downloadPng() {
+    const button = document.querySelector('[data-passport-format="image/png"]')
     button.disabled = true
     try {
-      const blob = await getEncoded('image/jpeg')
+      const blob = await getEncoded('image/png')
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'passport-photo'}-crop.jpg`
+      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'passport-photo'}-crop.png`
       document.body.append(link)
       link.click()
       link.remove()
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
       setDownloadOpen(false)
     } catch (downloadError) {
-      showError(downloadError.message || 'Could not create this JPEG image.')
+      showError(downloadError.message || 'Could not create this PNG image.')
     } finally {
       button.disabled = false
     }
@@ -558,7 +601,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   }
   customButton.addEventListener('click', makeCustomSelection)
   customRatioInput.addEventListener('input', () => {
-    const sanitized = sanitizeAspectInput(customRatioInput.value, true)
+    const sanitized = sanitizeAspectInput(customRatioInput.value)
     if (customRatioInput.value !== sanitized) customRatioInput.value = sanitized
     updateRatioButton(ratioSubmitButton, false)
     clearRatioInputError()
@@ -590,7 +633,13 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     setDownloadOpen(open)
     if (open) updateFileSizes()
   })
-  document.querySelector('[data-passport-format="image/jpeg"]').addEventListener('click', downloadJpeg)
+  document.querySelector('[data-passport-format="image/png"]').addEventListener('click', downloadPng)
+  unitButtons.forEach((button) => button.addEventListener('click', () => {
+    measurementUnit = button.dataset.passportUnit
+    unitOverlay.classList.add('hidden')
+    document.body.classList.remove('overflow-hidden')
+    updateUnitDisplay()
+  }))
   document.addEventListener('click', (event) => {
     if (!downloadControl.contains(event.target)) setDownloadOpen(false)
   })
@@ -605,10 +654,22 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   editorImage.addEventListener('load', renderCropFrame)
   getToolSessions('passport-ratio').then(async (sessions) => {
     const session = sessions[0]
-    if (sourceFile || !session?.payload?.file) return
-    await acceptFile(session.payload.file, { expiresAt: session.expiresAt, restore: true })
+    if (!sourceFile && session?.payload?.file && session.expiresAt > Date.now()) {
+      measurementUnit = units[session.payload.measurementUnit] ? session.payload.measurementUnit : 'mm'
+      updateUnitDisplay()
+      await acceptFile(session.payload.file, { expiresAt: session.expiresAt, restore: true })
+      return
+    }
+    unitOverlay.classList.remove('hidden')
+    unitOverlay.classList.add('grid')
+    document.body.classList.add('overflow-hidden')
+    unitButtons[0].focus()
   }).catch(() => {
     showError('Saved images could not be restored from this browser.')
+    unitOverlay.classList.remove('hidden')
+    unitOverlay.classList.add('grid')
+    document.body.classList.add('overflow-hidden')
+    unitButtons[0].focus()
   })
   setMenuVisibility()
 })()
