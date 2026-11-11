@@ -208,6 +208,17 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     context.restore()
   }
 
+  function recordImageActivity() {
+    fetch('/api/analytics/image-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+      keepalive: true
+    }).catch(() => {})
+  }
+
+  download.addEventListener('click', recordImageActivity)
+
   function renderFullResolutionOnMainThread(strokes, backgroundColor = null, outputType = 'image/webp') {
     const canvas = document.createElement('canvas')
     canvas.width = baseOutputCanvas.width
@@ -317,7 +328,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     const open = editedDownload.getAttribute('aria-expanded') !== 'true'
     setDownloadFormatsOpen(open)
     if (open) {
-      for (const sizeLabel of [pngDownloadSize, jpegDownloadSize, webpDownloadSize]) sizeLabel.textContent = '(calculating…)'
+      for (const sizeLabel of [pngDownloadSize, jpegDownloadSize, webpDownloadSize]) sizeLabel.textContent = 'please wait...'
       for (const outputType of ['image/png', 'image/jpeg', 'image/webp']) {
         getDownloadBlob(outputType).catch(() => {
           const labels = { 'image/png': pngDownloadSize, 'image/jpeg': jpegDownloadSize, 'image/webp': webpDownloadSize }
@@ -345,6 +356,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       document.body.append(link)
       link.click()
       link.remove()
+      recordImageActivity()
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
       setDownloadFormatsOpen(false)
     } catch (downloadError) {

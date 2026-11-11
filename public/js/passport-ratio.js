@@ -88,6 +88,15 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     error.classList.remove('hidden')
   }
 
+  function recordImageActivity() {
+    fetch('/api/analytics/image-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+      keepalive: true
+    }).catch(() => {})
+  }
+
   function hideError() {
     error.textContent = ''
     error.classList.add('hidden')
@@ -126,7 +135,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     preview.src = outputCanvas.toDataURL('image/png')
     previewCaption.textContent = `Preview · ${outputCanvas.width} × ${outputCanvas.height} px`
     encodedCache = null
-    for (const label of Object.values(sizeLabels)) label.textContent = '(calculating…)'
+    for (const label of Object.values(sizeLabels)) label.textContent = 'please wait...'
     setMenuVisibility()
   }
 
@@ -567,6 +576,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       document.body.append(link)
       link.click()
       link.remove()
+      recordImageActivity()
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
       setDownloadOpen(false)
     } catch (downloadError) {

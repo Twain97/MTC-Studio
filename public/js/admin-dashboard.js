@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <strong class="mt-3 block font-display text-4xl font-semibold text-dawn-950">${todayActivity.visitorCount}</strong>
       </article>
       <article class="border border-dawn-100 bg-dawn-50 p-5">
-        <p class="text-xs font-bold uppercase tracking-[.13em] text-dawn-500">Images converted today</p>
+        <p class="text-xs font-bold uppercase tracking-[.13em] text-dawn-500">Images processed or downloaded today</p>
         <strong class="mt-3 block font-display text-4xl font-semibold text-dawn-950">${todayActivity.imageConversionCount}</strong>
       </article>
     `
