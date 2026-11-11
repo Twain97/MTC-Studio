@@ -554,22 +554,23 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     }))
   }
 
-  async function downloadPng() {
-    const button = document.querySelector('[data-passport-format="image/png"]')
+  async function downloadImage(type) {
+    const button = document.querySelector(`[data-passport-format="${type}"]`)
     button.disabled = true
     try {
-      const blob = await getEncoded('image/png')
+      const blob = await getEncoded(type)
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'passport-photo'}-crop.png`
+      const extension = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[type]
+      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'passport-photo'}-crop.${extension}`
       document.body.append(link)
       link.click()
       link.remove()
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
       setDownloadOpen(false)
     } catch (downloadError) {
-      showError(downloadError.message || 'Could not create this PNG image.')
+      showError(downloadError.message || `Could not create this ${type.replace('image/', '').toUpperCase()} image.`)
     } finally {
       button.disabled = false
     }
@@ -633,7 +634,9 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     setDownloadOpen(open)
     if (open) updateFileSizes()
   })
-  document.querySelector('[data-passport-format="image/png"]').addEventListener('click', downloadPng)
+  document.querySelectorAll('[data-passport-format]').forEach((button) => {
+    button.addEventListener('click', () => downloadImage(button.dataset.passportFormat))
+  })
   unitButtons.forEach((button) => button.addEventListener('click', () => {
     measurementUnit = button.dataset.passportUnit
     unitOverlay.classList.add('hidden')

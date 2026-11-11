@@ -56,7 +56,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   const editedDownload = document.querySelector('[data-background-edited-download]')
   const editedDownloadControl = document.querySelector('[data-background-download-format-control]')
   const editedDownloadFormats = document.querySelector('[data-background-download-formats]')
-  const pngDownloadButton = document.querySelector('[data-background-download-format="image/png"]')
+  const downloadFormatButtons = [...document.querySelectorAll('[data-background-download-format]')]
   const pngDownloadSize = document.querySelector('[data-download-size="image/png"]')
   const jpegDownloadSize = document.querySelector('[data-download-size="image/jpeg"]')
   const webpDownloadSize = document.querySelector('[data-download-size="image/webp"]')
@@ -329,17 +329,19 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   document.addEventListener('click', (event) => {
     if (!editedDownloadControl.contains(event.target)) setDownloadFormatsOpen(false)
   })
-  pngDownloadButton.addEventListener('click', async () => {
+  downloadFormatButtons.forEach((button) => button.addEventListener('click', async () => {
     if ((!editHistory.length && !editBackgroundColor) || !baseOutputCanvas) return
-    pngDownloadButton.setAttribute('aria-busy', 'true')
+    const outputType = button.dataset.backgroundDownloadFormat
+    const extension = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[outputType]
+    button.setAttribute('aria-busy', 'true')
     try {
-      const blob = await getDownloadBlob('image/png')
+      const blob = await getDownloadBlob(outputType)
       if (!blob) return
-      if (blob.type !== 'image/png') throw new Error('This browser cannot create PNG images.')
+      if (blob.type !== outputType) throw new Error(`This browser cannot create ${outputType.replace('image/', '').toUpperCase()} images.`)
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'image'}-edited.png`
+      link.download = `${sourceFile.name.replace(/\.[^.]+$/, '') || 'image'}-edited.${extension}`
       document.body.append(link)
       link.click()
       link.remove()
@@ -348,9 +350,9 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     } catch (downloadError) {
       error.textContent = downloadError.message || 'Could not create the full resolution edited image.'
     } finally {
-      pngDownloadButton.removeAttribute('aria-busy')
+      button.removeAttribute('aria-busy')
     }
-  })
+  }))
   editorOverlay.addEventListener('click', (event) => {
     if (event.target === editorOverlay) closeEditor()
   })
