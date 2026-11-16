@@ -34,8 +34,8 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   const customButton = document.querySelector('[data-passport-custom]')
   const customSizeLabel = document.querySelector('[data-custom-ratio-size]')
   const customRatioInput = document.querySelector('[data-passport-custom-ratio-input]')
-  const ratioSubmitButton = document.querySelector('[data-passport-ratio-submit]')
-  const ratioInputError = document.querySelector('[data-passport-ratio-error]')
+  const ratioSubmitButton = document.querySelector('[data-passport-cutter-submit]')
+  const ratioInputError = document.querySelector('[data-passport-cutter-error]')
   const resizeHandles = [...document.querySelectorAll('[data-crop-handle]')]
   const applyButtons = [...document.querySelectorAll('[data-passport-apply]')]
   const mobileApplyRow = document.querySelector('[data-passport-apply-mobile-row]')
@@ -143,7 +143,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     window.clearTimeout(expirationTimer)
     expirationTimer = null
     expiresAt = 0
-    deleteToolSession('passport-ratio', 'current').catch(() => {})
+    deleteToolSession('passport-cutter', 'current').catch(() => {})
     sourceFile = null
     originalCanvas = null
     appliedCanvas = null
@@ -258,7 +258,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       updatePresetSizeLabels()
       setPreview()
       if (!options.restore) {
-        putToolSession('passport-ratio', 'current', { file, measurementUnit }, expiresAt).catch(() => {
+        putToolSession('passport-cutter', 'current', { file, measurementUnit }, expiresAt).catch(() => {
           showError('Your browser could not save this image for refresh recovery.')
         })
       }
@@ -665,7 +665,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   viewport.addEventListener('scroll', renderCropFrame)
   window.addEventListener('resize', renderCropFrame)
   editorImage.addEventListener('load', renderCropFrame)
-  getToolSessions('passport-ratio').then(async (sessions) => {
+  getToolSessions('passport-cutter').then(async (sessions) => {
     const session = sessions[0]
     if (!sourceFile && session?.payload?.file && session.expiresAt > Date.now()) {
       measurementUnit = units[session.payload.measurementUnit] ? session.payload.measurementUnit : 'mm'

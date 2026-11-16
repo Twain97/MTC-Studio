@@ -168,14 +168,14 @@ router.get('/remove-background', (_req, res) => {
   })
 })
 
-router.get('/passport-ratio', (_req, res) => {
-  res.render('pages/passport-ratio', {
-    title: 'Passport Ratio',
-    page: 'passport-ratio',
+router.get('/passport-cutter', (_req, res) => {
+  res.render('pages/passport-cutter', {
+    title: 'Passport Cutter',
+    page: 'passport-cutter',
     seo: pageSeo({
-      title: 'Passport Ratio Cropper | MTC Studio',
+      title: 'Passport Cutter | MTC Studio',
       description: 'Crop a single image to common passport photo aspect ratios in your browser.',
-      path: '/passport-ratio'
+      path: '/passport-cutter'
     })
   })
 })
@@ -254,7 +254,7 @@ router.get('/sitemap.xml', async (_req, res, next) => {
       { loc: '/image-compressor', priority: '0.6', changefreq: 'monthly' },
       { loc: '/image-converter', priority: '0.6', changefreq: 'monthly' },
       { loc: '/remove-background', priority: '0.6', changefreq: 'monthly' },
-      { loc: '/passport-ratio', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/passport-cutter', priority: '0.6', changefreq: 'monthly' },
       { loc: '/contact', priority: '0.8', changefreq: 'monthly' },
       ...projects.map((project) => ({
         loc: `/portfolio/${project._id}`,

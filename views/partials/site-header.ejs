@@ -11,12 +11,12 @@
       <a href="/about" class="nav-link <%= page === 'about' ? 'is-active' : '' %>">About</a>
       <a href="/portfolio" class="nav-link <%= page === 'portfolio' ? 'is-active' : '' %>">Portfolio</a>
       <details class="group relative">
-        <summary class="nav-link flex cursor-pointer list-none items-center gap-2 <%= ['image-compressor', 'image-converter', 'remove-background', 'passport-ratio'].includes(page) ? 'is-active' : '' %>">Image Tools <span aria-hidden="true" class="text-[10px] transition group-open:rotate-180">▼</span></summary>
+        <summary class="nav-link flex cursor-pointer list-none items-center gap-2 <%= ['image-compressor', 'image-converter', 'remove-background', 'passport-cutter'].includes(page) ? 'is-active' : '' %>">Image Tools <span aria-hidden="true" class="text-[10px] transition group-open:rotate-180">▼</span></summary>
         <div class="absolute left-0 top-full z-50 mt-2 grid min-w-52 gap-1 rounded-md border border-white/10 bg-dawn-950 p-2 shadow-xl">
           <a href="/image-compressor" class="nav-link rounded px-3 py-2 <%= page === 'image-compressor' ? 'is-active' : '' %>">Image Compressor</a>
           <a href="/image-converter" class="nav-link rounded px-3 py-2 <%= page === 'image-converter' ? 'is-active' : '' %>">Image Converter</a>
           <a href="/remove-background" class="nav-link rounded px-3 py-2 <%= page === 'remove-background' ? 'is-active' : '' %>">Remove Background</a>
-          <a href="/passport-ratio" class="nav-link rounded px-3 py-2 <%= page === 'passport-ratio' ? 'is-active' : '' %>">Passport Ratio</a>
+          <a href="/passport-cutter" class="nav-link rounded px-3 py-2 <%= page === 'passport-cutter' ? 'is-active' : '' %>">Passport Cutter</a>
         </div>
       </details>
       <a href="/contact" class="nav-link <%= page === 'contact' ? 'is-active' : '' %>">Contact</a>
@@ -40,7 +40,7 @@
         <a href="/image-compressor" class="block py-2 text-xs font-semibold uppercase tracking-[.14em] text-dawn-200">Image Compressor</a>
         <a href="/image-converter" class="block py-2 text-xs font-semibold uppercase tracking-[.14em] text-dawn-200">Image Converter</a>
         <a href="/remove-background" class="block py-2 text-xs font-semibold uppercase tracking-[.14em] text-dawn-200">Remove Background</a>
-        <a href="/passport-ratio" class="block py-2 text-xs font-semibold uppercase tracking-[.14em] text-dawn-200">Passport Ratio</a>
+        <a href="/passport-cutter" class="block py-2 text-xs font-semibold uppercase tracking-[.14em] text-dawn-200">Passport Cutter</a>
       </div>
     </details>
     <a href="/contact" class="block py-3 text-sm font-semibold uppercase tracking-[.18em] text-white">Contact</a>
