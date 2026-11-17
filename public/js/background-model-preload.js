@@ -24,7 +24,6 @@ function setState(nextState) {
 async function preloadModel() {
   try {
     if (!('caches' in window)) throw new Error('Persistent model cache is unavailable.')
-    await caches.delete('mtc-background-model-v1')
     const cache = await caches.open(CACHE_NAME)
     let completedBytes = 0
 
