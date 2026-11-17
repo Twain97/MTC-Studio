@@ -30,7 +30,10 @@ function setPublicCacheHeaders(res, filePath) {
 
 app.set('trust proxy', 1)
 app.use(helmet({
-  crossOriginEmbedderPolicy: { policy: 'require-corp' },
+  // The image worker uses single-threaded WASM and does not need cross-origin
+  // isolation. Avoid requiring CORP headers from static assets served by hosts
+  // or CDNs in front of this app.
+  crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: {
     directives: {
