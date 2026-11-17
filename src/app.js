@@ -54,6 +54,18 @@ app.set('views', path.resolve(currentDir, '../views'))
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan(env.nodeEnv === 'production' ? 'combined' : 'dev'))
+app.get('/runtime/remove-background-worker.js', (_req, res, next) => {
+  const workerPath = path.join(publicRoot, 'js', 'remove-background-worker.js')
+  res.set({
+    'Cache-Control': 'no-store',
+    'Content-Type': 'text/javascript; charset=utf-8',
+    'Cross-Origin-Embedder-Policy': 'require-corp',
+    'Cross-Origin-Resource-Policy': 'same-origin'
+  })
+  res.sendFile(workerPath, (error) => {
+    if (error) next(error)
+  })
+})
 app.use(express.static(publicRoot, { maxAge: '7d', setHeaders: setPublicCacheHeaders }))
 app.use('/vendor/libraw-wasm', express.static(path.resolve(currentDir, '../node_modules/libraw-wasm/dist'), { maxAge: '7d', immutable: true }))
 app.use('/vendor/transformers', express.static(path.resolve(currentDir, '../node_modules/@huggingface/transformers/dist'), { maxAge: '7d', immutable: true }))

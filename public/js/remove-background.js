@@ -473,7 +473,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   function getWorker() {
     if (worker) return worker
 
-    worker = new Worker('/js/remove-background-worker.js', { type: 'module' })
+    worker = new Worker('/runtime/remove-background-worker.js', { type: 'module' })
     worker.addEventListener('message', async (event) => {
       const message = event.data
       if (message.type === 'progress') {
