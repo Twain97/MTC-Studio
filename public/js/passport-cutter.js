@@ -60,9 +60,10 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
 
   const units = {
     ratio: { title: 'Aspect ratio', suffix: '', factor: 1, decimals: 0, placeholder: '4:5' },
-    mm: { title: 'Dimensions (mm)', suffix: 'mm', factor: 1, decimals: 0, placeholder: '35 x 45 mm' },
-    cm: { title: 'Dimensions (cm)', suffix: 'cm', factor: 10, decimals: 1, placeholder: '3.5 x 4.5 cm' },
-    in: { title: 'Dimensions (inches)', suffix: 'in', factor: 25.4, decimals: 2, placeholder: '1.38 x 1.77 in' }
+    mm: { title: 'Dimensions (mm)', suffix: 'mm', factor: 1, decimals: 0, placeholder: '35 x 45' },
+    cm: { title: 'Dimensions (cm)', suffix: 'cm', factor: 10, decimals: 1, placeholder: '3.5 x 4.5' },
+    in: { title: 'Dimensions (inches)', suffix: 'in', factor: 25.4, decimals: 2, placeholder: '1.38 x 1.77' },
+    px: { title: 'Dimensions (px)', suffix: 'px', factor: 1, decimals: 0, placeholder: '413 x 531' }
   }
 
   function formatPhysical(mm) {
@@ -74,12 +75,29 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     return `${formatPhysical(Number(button.dataset.mmWidth))} × ${formatPhysical(Number(button.dataset.mmHeight))} ${units[measurementUnit].suffix}`
   }
 
+  function customDimensionsLabel(widthPx, heightPx) {
+    if (measurementUnit === 'ratio') return getReducedRatio(widthPx, heightPx)
+    if (measurementUnit === 'px') return `${widthPx} × ${heightPx} px`
+    // Treat source pixels as 96 pixels per inch when showing a physical custom size.
+    const conversion = { mm: 25.4 / 96, cm: 2.54 / 96, in: 1 / 96 }[measurementUnit]
+    const precision = units[measurementUnit].decimals
+    const width = Number((widthPx * conversion).toFixed(precision))
+    const height = Number((heightPx * conversion).toFixed(precision))
+    return `${width} × ${height} ${units[measurementUnit].suffix}`
+  }
+
   function updateUnitDisplay() {
     const unit = units[measurementUnit]
     unitHeading.textContent = unit.title
-    inputLabel.textContent = measurementUnit === 'ratio' ? 'Enter a ratio' : `Enter a ratio or ${unit.suffix} dimensions`
+    inputLabel.textContent = measurementUnit === 'ratio' ? 'Enter a ratio' : `Enter dimensions in ${unit.suffix}`
     customRatioInput.placeholder = unit.placeholder
-    unitExample.textContent = measurementUnit === 'ratio' ? 'Example: 4:5' : `Examples: 4:5 or ${unit.placeholder}`
+    unitExample.textContent = measurementUnit === 'ratio' ? 'Example: 4:5' : `Example: ${unit.placeholder}`
+    ratioSubmitButton.textContent = measurementUnit === 'ratio' ? 'Set ratio' : 'Set dimensions'
+    applyButtons.forEach((button) => { button.textContent = 'Crop to selection' })
+    const editorHelp = editorOverlay.querySelector('[data-passport-editor-help]')
+    if (editorHelp) editorHelp.textContent = measurementUnit === 'ratio'
+      ? 'Choose a ratio, then drag the highlighted frame to position your crop.'
+      : `Choose ${unit.suffix} dimensions, then drag the highlighted frame to position your crop.`
     updatePresetSizeLabels()
   }
 
@@ -185,22 +203,17 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     button.classList.toggle('bg-white', !active)
   }
 
-  function sanitizeAspectInput(value) {
-    return String(value).slice(0, 40).replace(/[^0-9.:/xX×a-zA-Z\s]/g, '')
-  }
-
   function parseAspectInput(value) {
     const normalized = String(value).trim().replace(/\s+/g, ' ')
     const ratioMatch = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*:\s*(\d+(?:\.\d{1,4})?)$/)
-    const dimensionMatch = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*(?:x|×)\s*(\d+(?:\.\d{1,4})?)(?:\s*(mm|cm|in|inch|inches))?$/i)
+    const dimensionMatch = normalized.match(/^(\d+(?:\.\d{1,4})?)\s*(?:x|×)\s*(\d+(?:\.\d{1,4})?)$/i)
     const match = ratioMatch || dimensionMatch
-    if (!match || (measurementUnit === 'ratio' && !ratioMatch)) throw new Error(measurementUnit === 'ratio' ? 'Enter a ratio such as 4:5.' : `Enter a ratio or dimensions in ${units[measurementUnit].suffix}.`)
+    if (!match || (measurementUnit === 'ratio' && !ratioMatch) || (measurementUnit !== 'ratio' && !dimensionMatch)) throw new Error(measurementUnit === 'ratio' ? 'Enter a ratio such as 4:5.' : `Enter two numbers separated by x, such as ${units[measurementUnit].placeholder}.`)
     const width = Number(match[1])
     const height = Number(match[2])
-    const inputUnit = ratioMatch ? 'ratio' : (dimensionMatch[3] || measurementUnit).toLowerCase()
-    const factors = { ratio: 1, mm: 1, cm: 10, in: 25.4, inch: 25.4, inches: 25.4 }
-    if (inputUnit !== 'ratio' && inputUnit !== measurementUnit) throw new Error(`Use ${units[measurementUnit].suffix} for dimensions, or enter a ratio.`)
-    const aspect = inputUnit === 'ratio' ? width / height : (width * factors[inputUnit]) / (height * factors[inputUnit])
+    const inputUnit = ratioMatch ? 'ratio' : measurementUnit
+    const factors = { ratio: 1, mm: 1, cm: 10, in: 25.4, px: 1 }
+    const aspect = width / height
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0 || width > 100000 || height > 100000 || aspect < 0.05 || aspect > 20) {
       throw new Error('Enter positive dimensions with a ratio between 1:20 and 20:1.')
     }
@@ -215,9 +228,10 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     ratioHeight /= Math.max(1, a)
     return { width: ratioWidth, height: ratioHeight, label: `${ratioWidth}:${ratioHeight}`, fromInput: true,
       physicalWidth: inputUnit === 'ratio' ? null : width * factors[inputUnit],
-      physicalHeight: inputUnit === 'ratio' ? null : height * factors[inputUnit] }
+      physicalHeight: inputUnit === 'ratio' ? null : height * factors[inputUnit],
+      inputWidth: inputUnit === 'ratio' ? null : width,
+      inputHeight: inputUnit === 'ratio' ? null : height }
   }
-
   function clearRatioInputError() {
     ratioInputError.textContent = ''
     ratioInputError.classList.add('hidden')
@@ -285,16 +299,17 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     const cropWidth = Math.max(1, Math.round(selection.width))
     const cropHeight = Math.max(1, Math.round(selection.height))
     const selectedButton = ratioButtons.find((button) => button.getAttribute('aria-pressed') === 'true')
-    let dimensionsLabel = getReducedRatio(cropWidth, cropHeight)
-    if (!isCustomRatio && measurementUnit !== 'ratio') {
+    let dimensionsLabel = `${cropWidth} × ${cropHeight} px`
+    if (isCustomRatio) dimensionsLabel = customDimensionsLabel(cropWidth, cropHeight)
+    else if (measurementUnit === 'ratio') dimensionsLabel = getReducedRatio(cropWidth, cropHeight)
+    else if (measurementUnit !== 'px') {
       if (selectedButton) dimensionsLabel = physicalLabel(selectedButton)
-      else if (lastSelectedRatio?.physicalWidth) dimensionsLabel = `${formatPhysical(lastSelectedRatio.physicalWidth)} × ${formatPhysical(lastSelectedRatio.physicalHeight)} ${units[measurementUnit].suffix}`
+      else if (lastSelectedRatio?.physicalWidth != null) dimensionsLabel = `${formatPhysical(lastSelectedRatio.physicalWidth)} × ${formatPhysical(lastSelectedRatio.physicalHeight)} ${units[measurementUnit].suffix}`
     }
-    frameLabel.textContent = `${cropWidth} × ${cropHeight} px · ${dimensionsLabel}`
-    if (isCustomRatio) customSizeLabel.textContent = `(${cropWidth} × ${cropHeight} px · ${getReducedRatio(cropWidth, cropHeight)})`
+    frameLabel.textContent = dimensionsLabel
+    if (isCustomRatio) customSizeLabel.textContent = `(${dimensionsLabel})`
     cropFrame.classList.remove('hidden')
   }
-
   function fitRatio(width, height, ratioWidth, ratioHeight) {
     const availableUnits = Math.min(width / ratioWidth, height / ratioHeight)
     const units = availableUnits >= 1 ? Math.floor(availableUnits) : availableUnits
@@ -309,11 +324,15 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       const pixels = dimensions ? `${Math.round(dimensions.width)} × ${Math.round(dimensions.height)} px` : '— × — px'
       const dimensionsLabel = measurementUnit === 'ratio'
         ? `${button.dataset.ratioWidth}:${button.dataset.ratioHeight}`
-        : physicalLabel(button)
-      presetSizeLabels[index].textContent = `(${dimensionsLabel} · ${pixels})`
+        : measurementUnit === 'px' ? pixels : physicalLabel(button)
+      presetSizeLabels[index].textContent = ''
+      if (button.firstChild?.nodeType === Node.TEXT_NODE) {
+        button.firstChild.nodeValue = measurementUnit === 'ratio'
+          ? `${button.dataset.ratioWidth}:${button.dataset.ratioHeight} `
+          : `${dimensionsLabel} `
+      }
     }
   }
-
   function getReducedRatio(width, height) {
     let a = width
     let b = height
@@ -612,8 +631,6 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   }
   customButton.addEventListener('click', makeCustomSelection)
   customRatioInput.addEventListener('input', () => {
-    const sanitized = sanitizeAspectInput(customRatioInput.value)
-    if (customRatioInput.value !== sanitized) customRatioInput.value = sanitized
     updateRatioButton(ratioSubmitButton, false)
     clearRatioInputError()
   })
