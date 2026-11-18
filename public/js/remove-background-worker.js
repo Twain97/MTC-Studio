@@ -58,14 +58,26 @@ async function removeBackground(file) {
   self.postMessage({ type: 'progress', message: 'Fetching Subject' })
   const { RawImage } = await getRuntime()
   const image = await RawImage.read(file)
+  const originalWidth = image.width
+  const originalHeight = image.height
   self.postMessage({ type: 'progress', message: 'Removing Background' })
 
   const segmenter = await getSegmenter()
   const result = await segmenter(image)
 
   self.postMessage({ type: 'progress', message: 'Cleaning up Image' })
+  // The pipeline clones the input before applying its alpha mask, so the input
+  // pixels remain intact and can be transferred as the restore-brush source.
+  const originalBuffer = image.rgba().data.buffer
   const buffer = result.data.slice().buffer
-  return { width: result.width, height: result.height, buffer }
+  return {
+    width: result.width,
+    height: result.height,
+    buffer,
+    originalWidth,
+    originalHeight,
+    originalBuffer
+  }
 }
 
 self.addEventListener('message', async (event) => {
@@ -80,7 +92,7 @@ self.addEventListener('message', async (event) => {
     if (operation === 'load') return
 
     const result = await removeBackground(event.data.file)
-    self.postMessage({ type: 'result', ...result }, [result.buffer])
+    self.postMessage({ type: 'result', ...result }, [result.buffer, result.originalBuffer])
   } catch (error) {
     const message = error?.message || (operation === 'load' ? 'Could not load the MODNet model.' : 'Could not remove this image background.')
     self.postMessage(operation === 'load'

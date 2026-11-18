@@ -1,4 +1,4 @@
-function applyStroke(context, bitmap, stroke) {
+function applyStroke(context, bitmap, originalBitmap, stroke) {
   const points = stroke.points || []
   if (!points.length) return
   const radius = stroke.size / 2
@@ -43,20 +43,21 @@ function applyStroke(context, bitmap, stroke) {
     const top = Math.max(0, Math.floor(minY - radius))
     const right = Math.min(bitmap.width, Math.ceil(maxX + radius))
     const bottom = Math.min(bitmap.height, Math.ceil(maxY + radius))
-    context.drawImage(bitmap, left, top, right - left, bottom - top, left, top, right - left, bottom - top)
+    const source = stroke.tool === 'restore' ? originalBitmap : bitmap
+    context.drawImage(source, left, top, right - left, bottom - top, left, top, right - left, bottom - top)
   }
   context.restore()
 }
 
 self.addEventListener('message', async (event) => {
-  const { id, bitmap, type, strokes = [], backgroundColor = null, outputType = 'image/webp' } = event.data
+  const { id, bitmap, originalBitmap = bitmap, type, strokes = [], backgroundColor = null, outputType = 'image/webp' } = event.data
   try {
     const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
     const context = canvas.getContext('2d')
     if (!context) throw new Error('Image encoding is unavailable in this browser.')
     context.drawImage(bitmap, 0, 0)
     if (type === 'render') {
-      for (const stroke of strokes) applyStroke(context, bitmap, stroke)
+      for (const stroke of strokes) applyStroke(context, bitmap, originalBitmap, stroke)
     }
     if (backgroundColor) {
       context.save()
@@ -66,12 +67,14 @@ self.addEventListener('message', async (event) => {
       context.restore()
     }
     bitmap.close()
+    if (originalBitmap !== bitmap) originalBitmap.close()
     const blob = await canvas.convertToBlob({ type: outputType, quality: 0.92 })
     const formatName = outputType === 'image/png' ? 'PNG' : outputType === 'image/jpeg' ? 'JPEG' : 'WebP'
     if (blob.type !== outputType) throw new Error(`This browser cannot create ${formatName} images.`)
     self.postMessage({ id, blob })
   } catch (error) {
     bitmap.close()
+    if (originalBitmap !== bitmap) originalBitmap.close()
     self.postMessage({ id, error: error.message || 'Could not create the edited WebP image.' })
   }
 })

@@ -88,6 +88,8 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   let originalResultBlob = null
   let editedUrl = null
   let baseOutputCanvas = null
+  let originalSourceCanvas = null
+  let sourceCrop = null
   let editHistory = []
   let redoHistory = []
   let editCheckpoints = []
@@ -240,20 +242,26 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     const worker = getEncodeWorker()
     if (!worker || !window.createImageBitmap) return renderFullResolutionOnMainThread(strokes, backgroundColor, outputType)
 
+    let bitmap
+    let originalBitmap
     try {
-      const bitmap = await createImageBitmap(baseOutputCanvas)
+      bitmap = await createImageBitmap(baseOutputCanvas)
+      originalBitmap = await createImageBitmap(originalSourceCanvas || baseOutputCanvas)
       const id = ++encodeRequestId
       return await new Promise((resolve, reject) => {
         encodeRequests.set(id, { resolve, reject })
         try {
-          worker.postMessage({ id, type: 'render', bitmap, strokes, backgroundColor, outputType }, [bitmap])
+          worker.postMessage({ id, type: 'render', bitmap, originalBitmap, strokes, backgroundColor, outputType }, [bitmap, originalBitmap])
         } catch (workerError) {
           encodeRequests.delete(id)
           bitmap.close()
+          originalBitmap.close()
           reject(workerError)
         }
       })
     } catch {
+      bitmap?.close()
+      originalBitmap?.close()
       encodeWorker?.terminate()
       encodeWorker = null
       return renderFullResolutionOnMainThread(strokes, backgroundColor, outputType)
@@ -398,13 +406,43 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
   }
 
   async function pixelsToWebp(buffer, width, height) {
+    return canvasToWebp(pixelsToCanvas(buffer, width, height))
+  }
+
+  function pixelsToCanvas(buffer, width, height) {
     const canvas = document.createElement('canvas')
     canvas.width = width
     canvas.height = height
     const context = canvas.getContext('2d')
     if (!context) throw new Error('Image preview is unavailable in this browser.')
     context.putImageData(new ImageData(new Uint8ClampedArray(buffer), width, height), 0, 0)
-    return canvasToWebp(canvas)
+    return canvas
+  }
+
+  async function originalCanvasFromFile(file, crop = null, targetWidth = null, targetHeight = null) {
+    const bitmap = await createImageBitmap(file)
+    const fullCanvas = document.createElement('canvas')
+    fullCanvas.width = bitmap.width
+    fullCanvas.height = bitmap.height
+    const fullContext = fullCanvas.getContext('2d')
+    if (!fullContext) {
+      bitmap.close()
+      throw new Error('Original image editing is unavailable in this browser.')
+    }
+    fullContext.drawImage(bitmap, 0, 0)
+    bitmap.close()
+
+    const cropLeft = Math.max(0, Math.floor(crop?.x || 0))
+    const cropTop = Math.max(0, Math.floor(crop?.y || 0))
+    const cropWidth = Math.max(1, Math.min(fullCanvas.width - cropLeft, Math.floor(crop?.width || fullCanvas.width)))
+    const cropHeight = Math.max(1, Math.min(fullCanvas.height - cropTop, Math.floor(crop?.height || fullCanvas.height)))
+    const canvas = document.createElement('canvas')
+    canvas.width = targetWidth || cropWidth
+    canvas.height = targetHeight || cropHeight
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('Original image editing is unavailable in this browser.')
+    context.drawImage(fullCanvas, cropLeft, cropTop, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height)
+    return canvas
   }
 
   function updateModelLoading(percent, label) {
@@ -512,8 +550,27 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
 
       try {
         const blob = await pixelsToWebp(message.buffer, message.width, message.height)
+        if (message.originalBuffer) {
+          originalSourceCanvas = pixelsToCanvas(message.originalBuffer, message.originalWidth, message.originalHeight)
+          sourceCrop = {
+            x: 0,
+            y: 0,
+            width: message.originalWidth,
+            height: message.originalHeight
+          }
+        } else {
+          originalSourceCanvas = null
+          sourceCrop = null
+        }
         await showResult(blob)
-        putToolSession('remove-background', 'current', { file: sourceFile, resultBlob: blob, editedBlob: null, editHistory: [], redoHistory: [] }, expiresAt).catch(() => {
+        putToolSession('remove-background', 'current', {
+          file: sourceFile,
+          resultBlob: blob,
+          editedBlob: null,
+          editHistory: [],
+          redoHistory: [],
+          sourceCrop
+        }, expiresAt).catch(() => {
           error.textContent = 'Your browser could not save this result for refresh recovery. Download it before leaving.'
         })
       } catch (processingError) {
@@ -567,6 +624,8 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     originalResultBlob = null
     editedUrl = null
     baseOutputCanvas = null
+    originalSourceCanvas = null
+    sourceCrop = null
     pngSizeCache = null
     editRevision += 1
     editHistory = []
@@ -602,7 +661,7 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     updateReveal()
   }
 
-  async function showResult(blob, editedBlob = null, restoredHistory = [], restoredRedoHistory = [], restoredBackgroundColor = null) {
+  async function showResult(blob, editedBlob = null, restoredHistory = [], restoredRedoHistory = [], restoredBackgroundColor = null, restoredSourceCrop = null) {
     hideCropSelection()
     editBackgroundColor = restoredBackgroundColor || null
     updateBackgroundColorUI()
@@ -618,6 +677,23 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     baseOutputCanvas.height = bitmap.height
     baseOutputCanvas.getContext('2d').drawImage(bitmap, 0, 0)
     bitmap.close()
+    if (restoredSourceCrop || !originalSourceCanvas) {
+      sourceCrop = restoredSourceCrop || null
+      originalSourceCanvas = await originalCanvasFromFile(
+        sourceFile,
+        sourceCrop,
+        baseOutputCanvas.width,
+        baseOutputCanvas.height
+      )
+      if (!sourceCrop) {
+        sourceCrop = {
+          x: 0,
+          y: 0,
+          width: originalSourceCanvas.width,
+          height: originalSourceCanvas.height
+        }
+      }
+    }
     const previewSize = getEditorPreviewSize(baseOutputCanvas.width, baseOutputCanvas.height)
     editCanvas.width = previewSize.width
     editCanvas.height = previewSize.height
@@ -930,7 +1006,8 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       const top = Math.max(0, Math.floor(minY - sourceRadius))
       const right = Math.min(baseOutputCanvas.width, Math.ceil(maxX + sourceRadius))
       const bottom = Math.min(baseOutputCanvas.height, Math.ceil(maxY + sourceRadius))
-      context.drawImage(baseOutputCanvas, left, top, right - left, bottom - top, left * scaleX, top * scaleY, (right - left) * scaleX, (bottom - top) * scaleY)
+      const source = stroke.tool === 'restore' ? originalSourceCanvas : baseOutputCanvas
+      context.drawImage(source, left, top, right - left, bottom - top, left * scaleX, top * scaleY, (right - left) * scaleX, (bottom - top) * scaleY)
     }
     context.restore()
   }
@@ -988,7 +1065,8 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       editedBlob: blob,
       editHistory: historySnapshot,
       redoHistory: redoSnapshot,
-      backgroundColor: editBackgroundColor
+      backgroundColor: editBackgroundColor,
+      sourceCrop
     }, expiresAt).catch(() => {
       error.textContent = 'Your browser could not save the edited result for refresh recovery.'
     })
@@ -1010,6 +1088,10 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       nextBase.width = width
       nextBase.height = height
       nextBase.getContext('2d').drawImage(baseOutputCanvas, left, top, width, height, 0, 0, width, height)
+      const nextOriginal = document.createElement('canvas')
+      nextOriginal.width = width
+      nextOriginal.height = height
+      nextOriginal.getContext('2d').drawImage(originalSourceCanvas, left, top, width, height, 0, 0, width, height)
       const croppedResultBlob = await canvasToWebp(nextBase)
 
       if (editSaveTimer) clearTimeout(editSaveTimer)
@@ -1029,6 +1111,13 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
       redoHistory = shiftStrokes(redoHistory)
       editCheckpoints = []
       baseOutputCanvas = nextBase
+      originalSourceCanvas = nextOriginal
+      sourceCrop = {
+        x: (sourceCrop?.x || 0) + left,
+        y: (sourceCrop?.y || 0) + top,
+        width,
+        height
+      }
       originalResultBlob = croppedResultBlob
 
       if (resultUrl) URL.revokeObjectURL(resultUrl)
@@ -1389,7 +1478,14 @@ import { deleteToolSession, getToolSessions, putToolSession } from './tool-sessi
     if (!session?.payload?.file) return
     await setFile(session.payload.file, { expiresAt: session.expiresAt, restore: true })
     if (session.payload.resultBlob && sourceFile) {
-      await showResult(session.payload.resultBlob, session.payload.editedBlob, session.payload.editHistory, session.payload.redoHistory, session.payload.backgroundColor)
+      await showResult(
+        session.payload.resultBlob,
+        session.payload.editedBlob,
+        session.payload.editHistory,
+        session.payload.redoHistory,
+        session.payload.backgroundColor,
+        session.payload.sourceCrop
+      )
     }
   }).catch(() => {
     error.textContent = 'Saved images could not be restored from this browser.'
